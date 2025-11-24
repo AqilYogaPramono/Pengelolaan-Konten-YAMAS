@@ -8,10 +8,10 @@ const router = express.Router()
 
 router.get('/', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const jabatan = await Jabatan.getAll()
 
-        res.render('konten-manajer/personel/jabatan/index', {manajer, jabatan})
+        res.render('konten-manajer/personel/jabatan/index', {pegawai, jabatan})
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')
@@ -21,10 +21,10 @@ router.get('/', authManajer, async (req, res) => {
 
 router.get('/buat', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
 
         res.render('konten-manajer/personel/jabatan/buat', {
-            manajer,
+            pegawai,
             data: req.flash('data')[0]
         })
     } catch (err) {
@@ -64,11 +64,11 @@ router.post('/create', authManajer, async (req, res) => {
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
         const {id} = req.params
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const jabatan = await Jabatan.getById(id)
 
         res.render('konten-manajer/personel/jabatan/edit', {
-            manajer,
+            pegawai,
             jabatan,
         })
     } catch (err) {

@@ -38,11 +38,11 @@ const deleteOldPhoto = (oldPhoto) => {
 
 router.get('/', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const halamanUtama = await HalamanUtama.getAll()
         const count = await HalamanUtama.getCount()
 
-        res.render('konten-manajer/halaman-utama/index', { halamanUtama, manajer, count })
+        res.render('konten-manajer/halaman-utama/index', { halamanUtama, pegawai, count })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal server error')
@@ -58,7 +58,7 @@ router.get('/buat', authManajer, async (req, res) => {
             return res.redirect('/manajer/halaman-utama')
         }
 
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const usedUrutan = await HalamanUtama.getUsedUrutan()
         const availableUrutan = []
         for (let i = 1; i <= 8; i++) {
@@ -68,7 +68,7 @@ router.get('/buat', authManajer, async (req, res) => {
         }
 
         res.render('konten-manajer/halaman-utama/buat', {
-            manajer,
+            pegawai,
             availableUrutan,
             data: req.flash('data')[0]
         })
@@ -146,7 +146,7 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
         const {id} = req.params
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
 
         const halamanUtama = await HalamanUtama.getById(id)
         const usedUrutan = await HalamanUtama.getUsedUrutan()
@@ -159,7 +159,7 @@ router.get('/edit/:id', authManajer, async (req, res) => {
         }
 
         res.render('konten-manajer/halaman-utama/edit', {
-            manajer,
+            pegawai,
             halamanUtama,
             availableUrutan
         })

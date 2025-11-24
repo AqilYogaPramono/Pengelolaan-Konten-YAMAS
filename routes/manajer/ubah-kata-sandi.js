@@ -8,9 +8,9 @@ const router = express.Router()
 
 router.get('/', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         res.render('konten-manajer/manajer/ubah-kata-sandi', { 
-            manajer,
+            pegawai,
             data: req.flash('data')[0]
         })
     } catch (error) {
@@ -42,9 +42,9 @@ router.post('/change-password', authManajer, async (req, res) => {
             return res.redirect('/manajer/ubah-kata-sandi')
         }
 
-        const manajer = await Pegawai.getById(req.session.pegawaiId)
+        const pegawai = await Pegawai.getById(req.session.pegawaiId)
         
-        if (!(await bcrypt.compare(kata_sandi, manajer.kata_sandi))) {
+        if (!(await bcrypt.compare(kata_sandi, pegawai.kata_sandi))) {
             req.flash('error', 'Kata sandi lama yang anda inputkan salah')
             req.flash('data', data)
             return res.redirect('/manajer/ubah-kata-sandi')

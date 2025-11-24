@@ -54,10 +54,10 @@ const processUploadedPhotos = async (files = []) => {
 
 router.get('/', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const magang = await Magang.getAll()
 
-        res.render('konten-manajer/magang/index', { magang, manajer })
+        res.render('konten-manajer/magang/index', { magang, pegawai })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')
@@ -68,7 +68,7 @@ router.get('/', authManajer, async (req, res) => {
 router.get('/detail/:id', authManajer, async (req, res) => {
     try {
         const { id } = req.params
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const magang = await Magang.getById(id)
 
         if (!magang) {
@@ -78,7 +78,7 @@ router.get('/detail/:id', authManajer, async (req, res) => {
 
         const foto = await Magang.getPhotos(id)
 
-        res.render('konten-manajer/magang/detail', { magang, manajer, foto })
+        res.render('konten-manajer/magang/detail', { magang, pegawai, foto })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')
@@ -88,10 +88,10 @@ router.get('/detail/:id', authManajer, async (req, res) => {
 
 router.get('/buat', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
 
         res.render('konten-manajer/magang/buat', {
-            manajer,
+            pegawai,
             data: req.flash('data')[0]
         })
     } catch (err) {
@@ -143,7 +143,7 @@ router.post('/create', authManajer, upload.array('foto', 10), async (req, res) =
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
         const { id } = req.params
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
 
         const magang = await Magang.getById(id)
         if (!magang) {
@@ -154,7 +154,7 @@ router.get('/edit/:id', authManajer, async (req, res) => {
         const foto = await Magang.getPhotos(id)
 
         res.render('konten-manajer/magang/edit', {
-            manajer,
+            pegawai,
             magang,
             foto
         })

@@ -39,13 +39,13 @@ const deleteOldPhoto = (oldPhoto) => {
 
 router.get('/', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const jabatan = await Jabatan.getAll()
         const selectedJabatan = req.flash('selectedJabatan')[0]
         let anggota = await Anggota.getAll()
         if (selectedJabatan) anggota = await Anggota.getByJabatan(selectedJabatan)
 
-        res.render('konten-manajer/personel/anggota/index', {manajer, anggota, jabatan, selectedJabatan})
+        res.render('konten-manajer/personel/anggota/index', {pegawai, anggota, jabatan, selectedJabatan})
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')
@@ -67,11 +67,11 @@ router.post('/filter', authManajer, async (req, res) => {
 
 router.get('/buat', authManajer, async (req, res) => {
     try {
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const jabatan = await Jabatan.getAll()
 
         res.render('konten-manajer/personel/anggota/buat', {
-            manajer,
+            pegawai,
             jabatan,
             data: req.flash('data')[0]
         })
@@ -137,12 +137,12 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
         const {id} = req.params
-        const manajer = await Pegawai.getNama(req.session.pegawaiId)
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const anggota = await Anggota.getById(id)
         const jabatan = await Jabatan.getAll()
 
         res.render('konten-manajer/personel/anggota/edit', {
-            manajer,
+            pegawai,
             anggota,
             jabatan
         })
