@@ -89,7 +89,6 @@ class Pengumuman {
     static async getDetailForAPI(id) {
         try {
             const pengumuman = await this.getById(id)
-            if (!pengumuman) return null
             
             return {
                 id: pengumuman.id,

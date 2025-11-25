@@ -12,8 +12,7 @@ class Anggota {
 
     static async getByJabatan(jabatanId) {
         try {
-            const [rows] = await connection.query(
-                `SELECT a.*, j.nama_jabatan FROM anggota a LEFT JOIN jabatan j ON a.id_jabatan = j.id WHERE a.id_jabatan = ? ORDER BY a.id DESC`,
+            const [rows] = await connection.query(`SELECT a.*, j.nama_jabatan FROM anggota a LEFT JOIN jabatan j ON a.id_jabatan = j.id WHERE a.id_jabatan = ? ORDER BY a.id DESC`,
                 [jabatanId]
             )
             return rows

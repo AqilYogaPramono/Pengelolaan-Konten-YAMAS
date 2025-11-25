@@ -120,7 +120,7 @@ class Kunjungan {
                 `SELECT foto FROM foto_kunjungan WHERE id_kunjungan = ? ORDER BY id ASC LIMIT 1`,
                 [idKunjungan]
             )
-            return rows.length > 0 ? rows[0].foto : null
+            return rows[0].foto
         } catch (err) {
             throw err
         }
@@ -147,8 +147,6 @@ class Kunjungan {
     static async getDetailWithPhotos(id) {
         try {
             const kunjungan = await this.getById(id)
-            if (!kunjungan) return null
-            
             const foto = await this.getPhotos(id)
             return {
                 ...kunjungan,

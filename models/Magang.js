@@ -120,7 +120,7 @@ class Magang {
                 `SELECT foto FROM foto_kegiatan_magang WHERE id_magang = ? ORDER BY id ASC LIMIT 1`,
                 [idMagang]
             )
-            return rows.length > 0 ? rows[0].foto : null
+            return rows[0].foto
         } catch (err) {
             throw err
         }
