@@ -8,6 +8,7 @@ const { convertImageFile } = require('../../../middlewares/convertImage')
 const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const router = express.Router()
 
@@ -34,6 +35,19 @@ const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
         const filePath = path.join(__dirname, '../../../public/images/anggota', oldPhoto)
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+    }
+}
+
+const isThreeByFourPhoto = async (filePath, tolerance = 0.02) => {
+    try {
+        const metadata = await sharp(filePath).metadata()
+        if (!metadata.width || !metadata.height) return false
+        const ratio = metadata.width / metadata.height
+        const expected = 3 / 4
+        return Math.abs(ratio - expected) <= tolerance
+    } catch (err) {
+        console.error('Error checking anggota photo ratio:', err)
+        return false
     }
 }
 
@@ -118,6 +132,16 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
         }
 
         if (req.file && req.file.path) {
+            const isValidSize = await isThreeByFourPhoto(req.file.path)
+            if (!isValidSize) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Foto harus berukuran 3x4')
+                req.flash('data', req.body)
+                return res.redirect('/manajer/anggota/buat')
+            }
+        }
+
+        if (req.file && req.file.path) {
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
                 data.foto = path.basename(result.outputPath)
@@ -157,7 +181,6 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
     try {
         const {id} = req.params
         const anggota = await Anggota.getById(id)
-        console.log(anggota)
 
         const { nama, id_jabatan } = req.body
         const foto = req.file ? req.file.filename : anggota.foto
@@ -180,6 +203,15 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
             deleteUploadedFile(req.file)
             req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
             return res.redirect(`/manajer/anggota/edit/${id}`)
+        }
+
+        if (req.file && req.file.path) {
+            const isValidSize = await isThreeByFourPhoto(req.file.path)
+            if (!isValidSize) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Foto harus berukuran 3x4')
+                return res.redirect(`/manajer/anggota/edit/${id}`)
+            }
         }
 
         if (req.file && req.file.path) {

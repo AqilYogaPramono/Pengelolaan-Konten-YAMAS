@@ -28,9 +28,14 @@
                     <div class="form-group">
                       <label for="foto">Ganti Foto</label>
                       <input type="file" class="form-control" id="foto" name="foto" accept="image/*" data-preview="previewEdit">
+                      <small class="form-text text-muted">Format diperbolehkan: jpg, jpeg, png, webp dan Foto harus berukuran 3:4</small>
                       <% if (anggota.foto) { %>
                       <div class="mt-2">
-                        <img id="previewEdit" src="/images/anggota/<%= anggota.foto %>" data-src="/images/anggota/<%= anggota.foto %>" alt="foto anggota" style="height:300px;border-radius:8px;object-fit:cover;cursor:zoom-in;display:block;" class="img-click-preview">
+                        <img id="previewEdit" src="/images/anggota/<%= anggota.foto %>" data-src="/images/anggota/<%= anggota.foto %>" alt="foto anggota" style="width:100%;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;display:block;background:#f4f6fb;" class="img-click-preview">
+                      </div>
+                      <% } else { %>
+                      <div class="mt-2">
+                        <img id="previewEdit" src="#" alt="preview" style="width:100%;max-width:100%;max-height:300px;height:auto;border-radius:8px;display:none;cursor:zoom-in;object-fit:contain;background:#f4f6fb;" class="img-click-preview">
                       </div>
                       <% } %>
                     </div>
