@@ -26,7 +26,7 @@
                                 <label for="foto">Ganti Foto</label>
                                 <input type="file" class="form-control" id="foto" name="foto" accept="image/*" data-preview="previewEdit">
                                 <div class="mt-2">
-                                    <img id="previewEdit" src="<%= halamanUtama.foto ? ('/images/halaman-utama/' + halamanUtama.foto) : '/images/no-image.png' %>" data-src="<%= halamanUtama.foto ? ('/images/halaman-utama/' + halamanUtama.foto) : '/images/no-image.png' %>" alt="foto halaman utama" style="height:300px;border-radius:8px;object-fit:cover;cursor:zoom-in;" class="img-click-preview">
+                                    <img id="previewEdit" src="<%= halamanUtama.foto ? ('/images/halaman-utama/' + halamanUtama.foto) : '/images/no-image.png' %>" data-src="<%= halamanUtama.foto ? ('/images/halaman-utama/' + halamanUtama.foto) : '/images/no-image.png' %>" alt="foto halaman utama" style="width:100%;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;background:#f4f6fb;" class="img-click-preview">
                                 </div>
                             </div>
 

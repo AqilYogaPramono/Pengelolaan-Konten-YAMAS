@@ -7,6 +7,7 @@ const { convertImageFile } = require('../../middlewares/convertImage')
 const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const router = express.Router()
 
@@ -33,6 +34,16 @@ const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
         const filePath = path.join(__dirname, '../../public/images/halaman-utama', oldPhoto)
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+    }
+}
+
+const checkImageDimensions = async (filePath, requiredWidth = 3240, requiredHeight = 1272) => {
+    try {
+        const metadata = await sharp(filePath).metadata()
+        return metadata.width === requiredWidth && metadata.height === requiredHeight
+    } catch (err) {
+        console.error('Error checking image dimensions:', err)
+        return false
     }
 }
 
@@ -127,6 +138,16 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
         }
 
         if (req.file && req.file.path) {
+            const isValidDimensions = await checkImageDimensions(req.file.path)
+            if (!isValidDimensions) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Dimensi gambar harus 3240x1272 pixel')
+                req.flash('data', req.body)
+                return res.redirect('/manajer/halaman-utama/buat')
+            }
+        }
+
+        if (req.file && req.file.path) {
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
                 data.foto = path.basename(result.outputPath)
@@ -209,6 +230,15 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
             req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
             req.flash('data', req.body)
             return res.redirect(`/manajer/halaman-utama/edit/${id}`)
+        }
+
+        if (req.file && req.file.path) {
+            const isValidDimensions = await checkImageDimensions(req.file.path)
+            if (!isValidDimensions) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Dimensi gambar harus 3240x1272 pixel')
+                return res.redirect(`/manajer/halaman-utama/edit/${id}`)
+            }
         }
 
         if (req.file && req.file.path) {

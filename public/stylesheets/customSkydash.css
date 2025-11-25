@@ -393,6 +393,19 @@
     }
 }
 
+/* fix empty data message alignment in stacked table on mobile */
+@media (max-width: 575.98px) {
+    .table-stacked td[colspan] {
+        text-align: center !important;
+        width: 100% !important;
+        display: block !important;
+    }
+    .table-stacked td[colspan]::before {
+        content: '' !important;
+        display: none !important;
+    }
+}
+
 /* password toggle styles */
 .password-input-wrapper {
     position: relative;
