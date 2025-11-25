@@ -55,9 +55,16 @@ const processUploadedPhotos = async (files = []) => {
 router.get('/', authManajer, async (req, res) => {
     try {
         const pegawai = await Pegawai.getNama(req.session.pegawaiId)
-        const magang = await Magang.getAll()
+        const page = parseInt(req.query.page) || 1
+        const limit = 20
+        const offset = (page - 1) * limit
 
-        res.render('konten-manajer/magang/index', { magang, pegawai })
+        const magang = await Magang.getMagang(limit, offset)
+        const countResult = await Magang.getCountMagang()
+        const totalMagang = countResult[0].total_magang
+        const totalHalaman = Math.ceil(totalMagang / limit)
+
+        res.render('konten-manajer/magang/index', { magang, pegawai, page, totalHalaman })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')

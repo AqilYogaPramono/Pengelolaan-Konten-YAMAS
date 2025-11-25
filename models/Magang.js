@@ -19,6 +19,24 @@ class Magang {
         }
     }
 
+    static async getMagang(limit, offset) {
+        try {
+            const [rows] = await connection.query(`SELECT * FROM magang ORDER BY id DESC LIMIT ? OFFSET ?`, [limit, offset])
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async getCountMagang() {
+        try {
+            const [rows] = await connection.query(`SELECT COUNT(id) AS total_magang FROM magang`)
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
     static async getById(id) {
         try {
             const [rows] = await connection.query(`SELECT * FROM magang WHERE id = ?`, [id])

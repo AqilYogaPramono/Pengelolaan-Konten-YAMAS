@@ -19,6 +19,24 @@ class Kunjungan {
         }
     }
 
+    static async getKunjungan(limit, offset) {
+        try {
+            const [rows] = await connection.query(`SELECT * FROM kunjungan ORDER BY id DESC LIMIT ? OFFSET ?`, [limit, offset])
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async getCountKunjungan() {
+        try {
+            const [rows] = await connection.query(`SELECT COUNT(id) AS total_kunjungan FROM kunjungan`)
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
     static async getById(id) {
         try {
             const [rows] = await connection.query(`SELECT * FROM kunjungan WHERE id = ?`, [id])

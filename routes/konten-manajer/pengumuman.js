@@ -39,9 +39,16 @@ const deleteOldPhoto = (oldPhoto) => {
 router.get('/', authManajer, async (req, res) => {
     try {
         const pegawai = await Pegawai.getNama(req.session.pegawaiId)
-        const pengumuman = await Pengumuman.getAll()
+        const page = parseInt(req.query.page) || 1
+        const limit = 20
+        const offset = (page - 1) * limit
 
-        res.render('konten-manajer/pengumuman/index', { pengumuman, pegawai })
+        const pengumuman = await Pengumuman.getPengumuman(limit, offset)
+        const countResult = await Pengumuman.getCountPengumuman()
+        const totalPengumuman = countResult[0].total_pengumuman
+        const totalHalaman = Math.ceil(totalPengumuman / limit)
+
+        res.render('konten-manajer/pengumuman/index', { pengumuman, pegawai, page, totalHalaman })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal server error')

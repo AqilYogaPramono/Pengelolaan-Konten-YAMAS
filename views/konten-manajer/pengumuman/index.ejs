@@ -26,9 +26,11 @@
                                 </thead>
                                 <tbody>
                                     <% if (Array.isArray(pengumuman) && pengumuman.length) { %>
+                                        <% const currentPage = (typeof page !== 'undefined' && page) ? page : 1; %>
+                                        <% const startNumber = (currentPage - 1) * 20 + 1; %>
                                         <% for (let i = 0; i < pengumuman.length; i++) { const item = pengumuman[i]; %>
                                             <tr>
-                                                <td data-label="No"><%= i + 1 %></td>
+                                                <td data-label="No"><%= startNumber + i %></td>
                                                 <td data-label="Foto">
                                                     <% if (item.foto) { %>
                                                         <img class="img-click-preview" data-src="<%= '/images/pengumuman/' + item.foto %>" src="<%= '/images/pengumuman/' + item.foto %>" alt="foto pengumuman" style="height:85px;width:auto;border-radius:6px;object-fit:cover;cursor:zoom-in;">
@@ -53,6 +55,29 @@
                                     <% } %>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-muted small">Halaman <%= (typeof page !== 'undefined' && page) ? page : 1 %> dari <%= (typeof totalHalaman !== 'undefined' && totalHalaman) ? totalHalaman : 1 %></div>
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    <% const currentPage = (typeof page !== 'undefined' && page) ? page : 1; %>
+                                    <% const totalPages = (typeof totalHalaman !== 'undefined' && totalHalaman) ? totalHalaman : 1; %>
+                                    <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+                                        <a class="page-link" href="?page=<%= currentPage - 1 %>" data-loading aria-label="Sebelumnya">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <% for (let p = 1; p <= totalPages; p++) { %>
+                                        <li class="page-item <%= p === currentPage ? 'active' : '' %>"><a class="page-link" href="?page=<%= p %>" data-loading><%= p %></a></li>
+                                    <% } %>
+                                    <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link" href="?page=<%= currentPage + 1 %>" data-loading aria-label="Berikutnya">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>

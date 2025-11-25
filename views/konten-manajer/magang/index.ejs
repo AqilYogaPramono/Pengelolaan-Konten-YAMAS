@@ -36,9 +36,11 @@
                                 </thead>
                                 <tbody>
                                     <% if (Array.isArray(magang) && magang.length) { %>
+                                        <% const currentPage = (typeof page !== 'undefined' && page) ? page : 1; %>
+                                        <% const startNumber = (currentPage - 1) * 20 + 1; %>
                                         <% for (let i = 0; i < magang.length; i++) { const item = magang[i]; %>
                                             <tr>
-                                                <td data-label="No"><%= i + 1 %></td>
+                                                <td data-label="No"><%= startNumber + i %></td>
                                                 <td data-label="Judul"><%= item.judul %></td>
                                                 <td data-label="Deskripsi Tugas"><%= item.deskripsi_tugas ? (item.deskripsi_tugas.length > 80 ? item.deskripsi_tugas.substring(0, 80) + '...' : item.deskripsi_tugas) : '-' %></td>
                                                 <td data-label="Periode Mulai"><%= formatDate(item.periode_mulai) %></td>
@@ -52,11 +54,34 @@
                                         <% } %>
                                     <% } else { %>
                                         <tr>
-                                            <td colspan="5" class="text-center">Belum ada data</td>
+                                            <td colspan="7" class="text-center">Belum ada data</td>
                                         </tr>
                                     <% } %>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-muted small">Halaman <%= (typeof page !== 'undefined' && page) ? page : 1 %> dari <%= (typeof totalHalaman !== 'undefined' && totalHalaman) ? totalHalaman : 1 %></div>
+                            <nav>
+                                <ul class="pagination mb-0">
+                                    <% const currentPage = (typeof page !== 'undefined' && page) ? page : 1; %>
+                                    <% const totalPages = (typeof totalHalaman !== 'undefined' && totalHalaman) ? totalHalaman : 1; %>
+                                    <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+                                        <a class="page-link" href="?page=<%= currentPage - 1 %>" data-loading aria-label="Sebelumnya">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <% for (let p = 1; p <= totalPages; p++) { %>
+                                        <li class="page-item <%= p === currentPage ? 'active' : '' %>"><a class="page-link" href="?page=<%= p %>" data-loading><%= p %></a></li>
+                                    <% } %>
+                                    <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                                        <a class="page-link" href="?page=<%= currentPage + 1 %>" data-loading aria-label="Berikutnya">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>

@@ -10,6 +10,24 @@ class Pengumuman {
         }
     }
 
+    static async getPengumuman(limit, offset) {
+        try {
+            const [rows] = await connection.query(`SELECT * FROM pengumuman ORDER BY dibuat_pada DESC LIMIT ? OFFSET ?`, [limit, offset])
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async getCountPengumuman() {
+        try {
+            const [rows] = await connection.query(`SELECT COUNT(id) AS total_pengumuman FROM pengumuman`)
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
     static async getPengumuman() {
         try {
             const [rows] = await connection.query(`SELECT id, judul, foto, dibuat_pada FROM pengumuman order by dibuat_pada desc`)
