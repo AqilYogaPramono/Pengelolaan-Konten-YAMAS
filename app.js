@@ -10,8 +10,8 @@ const cors = require('cors')
 
 const { onlyDomain } = require('./middlewares/cors-option')
 
+const indexRouter = require('./routes/index')
 const authRouter = require('./routes/auth')
-
 const APIRouter = require('./routes/API')
 
 const manajerDashboard = require('./routes/manajer/dashboard')
@@ -50,6 +50,7 @@ app.use(session({
 app.use(flash())
 app.use(cors())
 
+app.use('/', indexRouter)
 app.use('/', authRouter)
 
 app.use('/API', APIRouter)

@@ -1,8 +1,480 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-a {
-  color: #00B7FF;
+:root {
+    --primary-color: #0F8EC8;
+    --primary-dark: #0a6fa0;
+    --accent-color: #FFD700;
+    --accent-dark: #FFA500;
+    --text-dark: #1a1a1a;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.landing-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    padding-top: 1rem;
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('/images/assets/bg_medayuagung_1.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    position: relative;
+}
+
+.landing-content {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 4rem;
+}
+
+.brand-logo {
+    position: absolute;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.brand-logo img {
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+}
+
+.landing-text {
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+
+.landing-title {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: visible;
+    text-align: center;
+}
+
+.title-line {
+    display: block;
+    color: var(--text-light);
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.title-highlight {
+    display: block;
+    color: #0F8EC8;
+    font-weight: 700;
+    text-align: center;
+}
+
+.landing-description {
+    font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+    line-height: 1.6;
+    color: #ffffff;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: 300;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.landing-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-top: 0.5rem;
+}
+
+.btn-landing {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    min-width: 220px;
+    border: 2px solid transparent;
+    color: var(--text-dark);
+    background: #ffffff;
+}
+
+.btn-pustakawan {
+    color: #ffffff;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-pustakawan:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: #ffffff;
+}
+
+.btn-pustakawan:active {
+    background: #095a7a;
+}
+
+.btn-manajer {
+    color: var(--text-dark);
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-manajer:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: var(--text-dark);
+}
+
+.btn-manajer:active {
+    background: #e6c200;
+}
+
+@media (max-width: 768px) {
+    .landing-container {
+        padding: 1rem;
+        padding-top: 0.75rem;
+    }
+    
+    .landing-content {
+        padding-top: 3.5rem;
+        max-width: 100%;
+    }
+
+    .brand-logo {
+        top: 1rem;
+    }
+
+    .brand-logo img {
+        max-width: 100px;
+    }
+
+    .landing-text {
+        margin-bottom: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .landing-title {
+        margin-bottom: 1rem;
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        white-space: normal;
+        line-height: 1.4;
+    }
+    
+    .landing-description {
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        line-height: 1.6;
+        padding: 0 0.5rem;
+    }
+
+    .landing-buttons {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        padding: 0 1rem;
+    }
+
+    .btn-landing {
+        width: 100%;
+        min-width: auto;
+        min-height: 48px;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-container {
+        padding: 0.75rem;
+        padding-top: 0.5rem;
+    }
+    
+    .landing-content {
+        padding-top: 3rem;
+        max-width: 100%;
+    }
+
+    .brand-logo {
+        top: 0.75rem;
+    }
+
+    .brand-logo img {
+        max-width: 80px;
+    }
+
+    .landing-text {
+        margin-bottom: 1.25rem;
+        padding: 0 0.75rem;
+    }
+
+    .landing-title {
+        margin-bottom: 0.875rem;
+        font-size: clamp(1.25rem, 6vw, 1.75rem);
+        white-space: normal;
+        line-height: 1.3;
+    }
+    
+    .landing-description {
+        font-size: clamp(0.875rem, 3vw, 0.95rem);
+        line-height: 1.5;
+        padding: 0;
+    }
+
+    .landing-buttons {
+        gap: 0.875rem;
+        padding: 0 0.75rem;
+    }
+
+    .btn-landing {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+        min-height: 48px;
+        border-radius: 8px;
+    }
+}
+
+/* Auth Pages Styling */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('/images/assets/bg_medayuagung_1.webp');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.auth-form-light {
+    background: #ffffff;
+    padding: 2rem 1.75rem 1.75rem 1.75rem;
+    border-radius: 0;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    position: relative;
+    text-align: center;
+    border: 2px solid #ffffff;
+}
+
+.auth-form-light h2 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.75rem;
+    color: #1f2937;
+    letter-spacing: .2px;
+}
+
+.auth-form-light .brand-logo {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.auth-form-light .brand-logo img {
+    max-width: 80px;
+    height: auto;
+}
+
+.auth-form-light .form-group {
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
+.auth-form-light .input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d8dee6;
+    border-radius: 0;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-form-light .input-group:focus-within {
+    border-color: #0F8EC8;
+    box-shadow: 0 0 0 3px rgba(15, 142, 200, 0.15);
+}
+
+.auth-form-light .input-group-text {
+    background-color: #eef2f6;
+    border: none;
+    padding: 0.75rem 0.75rem;
+    color: #495057;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-form-light .input-group-text i {
+    font-size: 0.7rem;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-form-light .toggle-password {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0.75rem;
+    flex: 0 0 44px;
+    min-width: 44px;
+    font-size: 0.75rem;
+}
+
+.auth-form-light .toggle-password i {
+    font-size: 0.7rem;
+}
+
+.auth-form-light .form-control-lg {
+    border: none;
+    box-shadow: none;
+    padding: 0.875rem 1.25rem;
+    font-size: 1.1rem;
+    height: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.auth-form-light .form-control-lg:focus {
+    outline: none;
+}
+
+.auth-form-btn {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0;
+    margin-top: 1.25rem;
+    background-color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    color: var(--text-dark);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    display: block;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.auth-form-btn:hover {
+    background-color: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: var(--text-dark);
+}
+
+.auth-form-btn:active {
+    background-color: #e6c200;
+}
+
+.auth-form-light .text-danger {
+    color: #dc3545;
+    font-size: 0.875rem;
+    text-align: left;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 0.75rem;
+    }
+    
+    .auth-form-light {
+        max-width: 100%;
+        padding: 1.5rem 1.25rem;
+        margin: 0 0.75rem;
+    }
+    
+    .auth-form-light h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .auth-form-light .brand-logo {
+        margin-bottom: 1.5rem;
+    }
+    
+    .auth-form-light .brand-logo img {
+        max-width: 70px;
+    }
+    
+    .auth-form-light .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .auth-form-light .input-group-text {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.7rem;
+        min-width: 44px;
+    }
+    
+    .auth-form-light .input-group-text i {
+        font-size: 0.7rem;
+    }
+    
+    .auth-form-light .form-control-lg {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+    
+    .auth-form-light .toggle-password {
+        padding: 0.75rem 0.75rem;
+        font-size: 0.7rem;
+        min-width: 48px;
+        min-height: 48px;
+    }
+    
+    .auth-form-light .toggle-password i {
+        font-size: 0.7rem;
+    }
+    
+    .auth-form-btn {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+        margin-top: 1.25rem;
+        min-height: 48px;
+    }
 }

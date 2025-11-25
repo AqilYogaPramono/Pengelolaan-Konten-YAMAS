@@ -4,12 +4,12 @@ const authManajer = async (req, res, next) => {
             return next()
         } else {
             req.flash('error', 'Anda tidak memiliki akses kehalaman tersebut')
-            res.redirect('/')
+            res.redirect('/masuk')
         }
     } catch(err) {
         console.error(err)
         req.flash('error', 'Internal Server Error')
-        res.redirect('/')
+        res.redirect('/masuk')
     }
 }
 
