@@ -1309,3 +1309,137 @@ nav .pagination li.page-item:not(.disabled):focus-within > a.page-link {
         padding: 0.75rem;
     }
 }
+
+/* pengumuman index refinements */
+.pengumuman-heading {
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 1rem;
+}
+.pengumuman-heading__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.pengumuman-heading .card-title {
+    margin-bottom: 0;
+}
+.pengumuman-search-form {
+    margin-bottom: 1.5rem;
+}
+.pengumuman-search {
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+.pengumuman-search .search-input-wrapper {
+    position: relative;
+    flex: 1;
+}
+.pengumuman-search .search-input-wrapper .form-control {
+    height: 48px;
+    padding-right: 3rem;
+    font-size: 0.95rem;
+}
+.search-clear-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 1.35rem;
+    line-height: 1;
+    text-decoration: none !important;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+.search-clear-btn:hover,
+.search-clear-btn:focus {
+    color: #0f172a;
+    background: rgba(15, 142, 200, 0.12);
+    text-decoration: none !important;
+}
+.search-actions {
+    display: flex;
+    align-items: center;
+}
+.search-submit {
+    height: 48px;
+    padding: 0 1.5rem;
+    font-weight: 600;
+}
+.pengumuman-table .img-click-preview,
+.table-photo-full {
+    width: auto;
+    height: 85px;
+    border-radius: 6px;
+    object-fit: cover;
+    cursor: zoom-in;
+}
+.pengumuman-table td[data-label="Isi Pengumuman"] {
+    white-space: normal;
+    line-height: 1.4;
+}
+.pengumuman-isi {
+    white-space: pre-line;
+    line-height: 1.5;
+    color: #1f2937;
+}
+.pengumuman-detail-image {
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    box-shadow: 0 18px 38px rgba(15, 142, 200, 0.12);
+}
+.pengumuman-detail-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+.pengumuman-detail-content .meta-label {
+    color: #0f172a;
+}
+.pengumuman-detail-text {
+    white-space: pre-line;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+.pengumuman-detail-card .btn-actions .btn {
+    min-width: 90px;
+}
+.detail-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+}
+.pengumuman-detail-date strong {
+    color: #0f172a;
+}
+@media (max-width: 575.98px) {
+    .pengumuman-search {
+        flex-direction: column;
+    }
+    .search-actions,
+    .search-submit {
+        width: 100%;
+    }
+    .search-submit {
+        justify-content: center;
+    }
+    .pengumuman-heading {
+        padding-bottom: 0.75rem;
+    }
+}

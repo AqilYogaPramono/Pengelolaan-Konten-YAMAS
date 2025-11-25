@@ -1,0 +1,97 @@
+<%- include('../../partials/headers/__header-dashboard.ejs', { title: 'Detail Pengumuman' }) %>
+<%- include('../../partials/navs/__nav-manajer.ejs') %>
+<%- include('../../partials/messages/__messages-dashboard.ejs') %>
+
+<%
+    const formatDate = (value) => {
+        if (!value) return '-'
+        const date = new Date(value)
+        if (isNaN(date)) return value
+        return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
+    }
+
+    const fotoPengumuman = pengumuman && pengumuman.foto ? ('/images/pengumuman/' + pengumuman.foto): '/images/no-image.png'
+%>
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-lg-12 grid-margin">
+                <div class="card detail-card pengumuman-detail-card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                            <div>
+                                <h4 class="card-title mb-1">Detail Pengumuman</h4>
+                                <p class="mb-0 text-muted"><%= pengumuman.judul %></p>
+                            </div>
+                            <div class="btn-actions mt-3 mt-md-0">
+                                <a href="/manajer/pengumuman/edit/<%= pengumuman.id %>" class="btn btn-outline-info" data-loading>Edit</a>
+                                <button type="button" class="btn btn-outline-danger btn-delete" data-url="/manajer/pengumuman/hapus/<%= pengumuman.id %>">Hapus</button>
+                                <a href="/manajer/pengumuman" class="btn btn-light" data-loading>Kembali</a>
+                            </div>
+                        </div>
+
+                        <div class="pengumuman-detail-image mb-4">
+                            <img src="<%= fotoPengumuman %>" data-src="<%= fotoPengumuman %>" alt="foto pengumuman" class="img-click-preview pengumuman-detail-photo">
+                        </div>
+
+                        <div class="detail-info mb-4">
+                            <div class="info-item">
+                                <div class="info-label text-uppercase">Judul Pengumuman</div>
+                                <div class="info-value text-left"><%= pengumuman.judul %></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label text-uppercase">Tanggal Dibuat</div>
+                                <div class="info-value text-left"><%= formatDate(pengumuman.dibuat_pada) %></div>
+                            </div>
+                        </div>
+
+                        <div class="description-box mb-4 pengumuman-detail-content">
+                            <div class="detail-section-title text-uppercase">Isi Pengumuman</div>
+                            <p class="mb-0 pengumuman-detail-text"><%= pengumuman.isi %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-below-navbar" id="modalConfirmDelete" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus data ini?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDelete">Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-below-navbar modal-top" id="globalImagePreviewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pratinjau Gambar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <img id="globalImagePreviewEl" src="" alt="preview" style="width:100%;height:auto;display:block;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../partials/scripts/__script-dashboard.ejs') %>
+

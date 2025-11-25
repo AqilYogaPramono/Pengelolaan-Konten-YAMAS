@@ -12,19 +12,20 @@
                         <form action="/manajer/pengumuman/update/<%= pengumuman.id %>" method="POST" enctype="multipart/form-data" data-loading>
                             <div class="form-group">
                                 <label for="judul_pengumuman">Judul Pengumuman</label>
-                                <input type="text" class="form-control" id="judul_pengumuman" name="judul" placeholder="Masukkan judul pengumuman" value="<%= pengumuman.judul %>" required>
+                                <input type="text" class="form-control" id="judul_pengumuman" name="judul" placeholder="Masukkan judul pengumuman" value="<%= (pengumuman && pengumuman.judul) || '' %>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="isi_pengumuman">Isi Pengumuman</label>
-                                <textarea class="form-control" id="isi_pengumuman" name="isi" rows="6" placeholder="Masukkan isi pengumuman" required><%= pengumuman.isi || '' %></textarea>
+                                <textarea class="form-control" id="isi_pengumuman" name="isi" rows="6" placeholder="Masukkan isi pengumuman" required><%= (pengumuman && pengumuman.isi) || '' %></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="foto_pengumuman">Ganti Foto Pengumuman</label>
                                 <input type="file" class="form-control" id="foto_pengumuman" name="foto" accept="image/*" data-preview="previewEdit">
+                                <small class="form-text text-muted">Format diperbolehkan: jpg, jpeg, png, webp dan Dimensi gambar harus 3240x1272 pixel</small>
                                 <div class="mt-2">
-                                    <img id="previewEdit" src="<%= pengumuman.foto ? ('/images/pengumuman/' + pengumuman.foto) : '/images/no-image.png' %>" data-src="<%= pengumuman.foto ? ('/images/pengumuman/' + pengumuman.foto) : '/images/no-image.png' %>" alt="foto pengumuman" style="height:300px;border-radius:8px;object-fit:cover;cursor:zoom-in;display:<%= pengumuman.foto ? 'block' : 'none' %>;" class="img-click-preview">
+                                    <img id="previewEdit" src="<%= (pengumuman && pengumuman.foto) ? ('/images/pengumuman/' + pengumuman.foto) : '/images/no-image.png' %>" data-src="<%= (pengumuman && pengumuman.foto) ? ('/images/pengumuman/' + pengumuman.foto) : '/images/no-image.png' %>" alt="foto pengumuman" style="width:100%;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;background:#f4f6fb;" class="img-click-preview <%= (pengumuman && pengumuman.foto) ? '' : 'd-none' %>">
                                 </div>
                             </div>
 

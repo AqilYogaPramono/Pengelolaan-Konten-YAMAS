@@ -12,7 +12,20 @@ class Pengumuman {
 
     static async getPengumuman(limit, offset) {
         try {
-            const [rows] = await connection.query(`SELECT * FROM pengumuman ORDER BY dibuat_pada DESC LIMIT ? OFFSET ?`, [limit, offset])
+            const [rows] = await connection.query(
+                `SELECT * FROM pengumuman ORDER BY dibuat_pada DESC LIMIT ? OFFSET ?`,
+                [limit, offset]
+            )
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async searchByJudul(keyword) {
+        try {
+            const likeKeyword = `%${keyword}%`
+            const [rows] = await connection.query(`SELECT * FROM pengumuman WHERE judul LIKE ? ORDER BY dibuat_pada DESC`, [likeKeyword])
             return rows
         } catch (err) {
             throw err
@@ -28,9 +41,11 @@ class Pengumuman {
         }
     }
 
-    static async getPengumuman() {
+    static async getPengumumanSimple() {
         try {
-            const [rows] = await connection.query(`SELECT id, judul, foto, dibuat_pada FROM pengumuman order by dibuat_pada desc`)
+            const [rows] = await connection.query(
+                `SELECT id, judul, foto, dibuat_pada FROM pengumuman ORDER BY dibuat_pada DESC`
+            )
             return rows
         } catch (err) {
             throw err
@@ -75,7 +90,7 @@ class Pengumuman {
 
     static async getForAPI() {
         try {
-            const pengumuman = await this.getPengumuman()
+            const pengumuman = await this.getPengumumanSimple()
             return pengumuman.map(item => ({
                 id: item.id,
                 foto: item.foto,

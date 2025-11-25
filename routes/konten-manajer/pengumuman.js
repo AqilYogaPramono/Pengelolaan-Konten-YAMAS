@@ -7,6 +7,7 @@ const { convertImageFile } = require('../../middlewares/convertImage')
 const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const router = express.Router()
 
@@ -36,12 +37,34 @@ const deleteOldPhoto = (oldPhoto) => {
     }
 }
 
+const checkImageDimensions = async (filePath, requiredWidth = 3240, requiredHeight = 1272) => {
+    try {
+        const metadata = await sharp(filePath).metadata()
+        return metadata.width === requiredWidth && metadata.height === requiredHeight
+    } catch (err) {
+        console.error('Error checking pengumuman image dimensions:', err)
+        return false
+    }
+}
+
 router.get('/', authManajer, async (req, res) => {
     try {
         const pegawai = await Pegawai.getNama(req.session.pegawaiId)
         const page = parseInt(req.query.page) || 1
         const limit = 20
         const offset = (page - 1) * limit
+        const flashedKeyword = req.flash('keyword')[0]
+
+        if (flashedKeyword) {
+            const pengumuman = await Pengumuman.searchByJudul(flashedKeyword)
+            return res.render('konten-manajer/pengumuman/index', {
+                pengumuman,
+                pegawai,
+                page: 1,
+                totalHalaman: 1,
+                keyword: flashedKeyword
+            })
+        }
 
         const pengumuman = await Pengumuman.getPengumuman(limit, offset)
         const countResult = await Pengumuman.getCountPengumuman()
@@ -103,6 +126,16 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
         }
 
         if (req.file && req.file.path) {
+            const isValidDimensions = await checkImageDimensions(req.file.path)
+            if (!isValidDimensions) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Dimensi gambar harus 3240x1272 pixel')
+                req.flash('data', req.body)
+                return res.redirect('/manajer/pengumuman/buat')
+            }
+        }
+
+        if (req.file && req.file.path) {
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
                 data.foto = path.basename(result.outputPath)
@@ -112,6 +145,37 @@ router.post('/create', authManajer, upload.single('foto'), async (req, res) => {
         await Pengumuman.store(data)
         req.flash('success', 'Data Berhasil Ditambahkan')
         res.redirect('/manajer/pengumuman')
+    } catch (err) {
+        console.error(err)
+        req.flash('error', 'Internal server error')
+        res.redirect('/manajer/pengumuman')
+    }
+})
+
+router.post('/search', authManajer, async (req, res) => {
+    try {
+        const { judul } = req.body
+        req.flash('keyword', judul || '')
+        res.redirect('/manajer/pengumuman')
+    } catch (err) {
+        console.error(err)
+        req.flash('error', 'Internal server error')
+        res.redirect('/manajer/pengumuman')
+    }
+})
+
+router.get('/detail/:id', authManajer, async (req, res) => {
+    try {
+        const { id } = req.params
+        const pegawai = await Pegawai.getNama(req.session.pegawaiId)
+        const pengumuman = await Pengumuman.getById(id)
+
+        if (!pengumuman) {
+            req.flash('error', 'Data pengumuman tidak ditemukan')
+            return res.redirect('/manajer/pengumuman')
+        }
+
+        res.render('konten-manajer/pengumuman/detail', { pegawai, pengumuman })
     } catch (err) {
         console.error(err)
         req.flash('error', 'Internal server error')
@@ -168,6 +232,15 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
             req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
             req.flash('data', req.body)
             return res.redirect(`/manajer/pengumuman/edit/${id}`)
+        }
+
+        if (req.file && req.file.path) {
+            const isValidDimensions = await checkImageDimensions(req.file.path)
+            if (!isValidDimensions) {
+                deleteUploadedFile(req.file)
+                req.flash('error', 'Dimensi gambar harus 3240x1272 pixel')
+                return res.redirect(`/manajer/pengumuman/edit/${id}`)
+            }
         }
 
         if (req.file && req.file.path) {

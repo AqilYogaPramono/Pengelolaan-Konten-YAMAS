@@ -8,13 +8,31 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
-                            <h4 class="card-title mb-3 mb-md-0">Data Pengumuman</h4>
-                            <a href="/manajer/pengumuman/buat" class="btn btn-primary btn-sm" data-loading>Tambah Pengumuman</a>
+                        <div class="section-heading pengumuman-heading">
+                            <div class="pengumuman-heading__text">
+                                <h4 class="card-title">Data Pengumuman</h4>
+                            </div>
+                            <div class="toolbar-actions">
+                                <a href="/manajer/pengumuman/buat" class="btn btn-primary btn-add" data-loading>Tambah Pengumuman</a>
+                            </div>
                         </div>
 
+                        <form action="/manajer/pengumuman/search" method="POST" class="pengumuman-search-form" data-loading>
+                            <div class="pengumuman-search">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="form-control" name="judul" placeholder="Cari judul pengumuman..." value="<%= (typeof keyword !== 'undefined' && keyword) ? keyword : '' %>">
+                                    <a href="/manajer/pengumuman" class="search-clear-btn" data-loading aria-label="Bersihkan pencarian">
+                                        <span aria-hidden="true">&times;</span>
+                                    </a>
+                                </div>
+                                <div class="search-actions">
+                                    <button class="btn btn-primary search-submit" type="submit">Cari</button>
+                                </div>
+                            </div>
+                        </form>
+
                         <div class="table-responsive">
-                            <table class="table table-hover table-stacked">
+                            <table class="table table-hover table-stacked pengumuman-table">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -32,18 +50,14 @@
                                             <tr>
                                                 <td data-label="No"><%= startNumber + i %></td>
                                                 <td data-label="Foto">
-                                                    <% if (item.foto) { %>
-                                                        <img class="img-click-preview" data-src="<%= '/images/pengumuman/' + item.foto %>" src="<%= '/images/pengumuman/' + item.foto %>" alt="foto pengumuman" style="height:85px;width:auto;border-radius:6px;object-fit:cover;cursor:zoom-in;">
-                                                    <% } else { %>
-                                                        <span class="text-muted">-</span>
-                                                    <% } %>
+                                                    <% const fotoPengumuman = item.foto ? ('/images/pengumuman/' + item.foto) : '/images/no-image.png'; %>
+                                                    <img class="img-click-preview table-photo-full" data-src="<%= fotoPengumuman %>" src="<%= fotoPengumuman %>" alt="foto pengumuman">
                                                 </td>
                                                 <td data-label="Judul Pengumuman"><%= item.judul %></td>
                                                 <td data-label="Isi Pengumuman"><%= item.isi ? (item.isi.length > 50 ? item.isi.substring(0, 50) + '...' : item.isi) : '-' %></td>
                                                 <td class="text-right" data-label="Aksi">
                                                     <div class="btn-actions">
-                                                        <a href="/manajer/pengumuman/edit/<%= item.id %>" class="btn btn-sm btn-outline-info" data-loading>Edit</a>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete" data-url="/manajer/pengumuman/hapus/<%= item.id %>">Hapus</button>
+                                                        <a href="/manajer/pengumuman/detail/<%= item.id %>" class="btn btn-sm btn-outline-primary" data-loading>Detail</a>
                                                     </div>
                                                 </td>
                                             </tr>
