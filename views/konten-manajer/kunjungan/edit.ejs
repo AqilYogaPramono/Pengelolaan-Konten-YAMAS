@@ -31,11 +31,11 @@
 
                             <div class="form-group">
                                 <label>Foto Kegiatan Saat Ini</label>
-                                <div id="existingFotoContainer" class="image-preview-container">
+                                <div id="existingFotoContainer" class="image-preview-container magang-photo-container">
                                     <% if (Array.isArray(foto) && foto.length) { %>
                                         <% foto.forEach(function(item){ %>
-                                            <div class="image-preview-item" data-foto-id="<%= item.id %>">
-                                                <img src="/images/kunjungan/<%= item.foto %>" data-src="/images/kunjungan/<%= item.foto %>" alt="foto kunjungan" class="img-click-preview">
+                                            <div class="image-preview-item magang-photo-item" data-foto-id="<%= item.id %>">
+                                                <img src="/images/kunjungan/<%= item.foto %>" data-src="/images/kunjungan/<%= item.foto %>" alt="Foto kegiatan kunjungan" class="img-click-preview magang-photo-full">
                                                 <button type="button" class="image-preview-remove existing-foto-remove" data-foto-id="<%= item.id %>" aria-label="Hapus gambar">
                                                     <i class="mdi mdi-close"></i>
                                                 </button>
@@ -51,8 +51,8 @@
                             <div class="form-group">
                                 <label for="foto_baru">Tambah Foto Kegiatan</label>
                                 <input type="file" class="form-control" id="foto_baru" name="foto" accept="image/*" multiple data-preview-container="previewFotoBaruContainer">
-                                <small class="form-text text-muted">Foto baru akan ditambahkan ke daftar existing.</small>
-                                <div id="previewFotoBaruContainer" class="image-preview-container"></div>
+                                <small class="form-text text-muted">Foto baru akan ditambahkan ke daftar foto yang ada.</small>
+                                <div id="previewFotoBaruContainer" class="image-preview-container magang-photo-container"></div>
                             </div>
 
                             <div class="d-flex">

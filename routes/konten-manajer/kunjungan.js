@@ -58,6 +58,18 @@ router.get('/', authManajer, async (req, res) => {
         const page = parseInt(req.query.page) || 1
         const limit = 20
         const offset = (page - 1) * limit
+        const flashedKeyword = req.flash('keyword')[0]
+
+        if (flashedKeyword) {
+            const kunjungan = await Kunjungan.searchByJudul(flashedKeyword)
+            return res.render('konten-manajer/kunjungan/index', {
+                kunjungan,
+                pegawai,
+                page: 1,
+                totalHalaman: 1,
+                keyword: flashedKeyword
+            })
+        }
 
         const kunjungan = await Kunjungan.getKunjungan(limit, offset)
         const countResult = await Kunjungan.getCountKunjungan()
@@ -69,6 +81,18 @@ router.get('/', authManajer, async (req, res) => {
         console.error(err)
         req.flash('error', 'Internal Server Error')
         res.redirect('/manajer/dashboard')
+    }
+})
+
+router.post('/search', authManajer, async (req, res) => {
+    try {
+        const { judul } = req.body
+        req.flash('keyword', judul || '')
+        res.redirect('/manajer/kunjungan')
+    } catch (err) {
+        console.error(err)
+        req.flash('error', 'Internal Server Error')
+        res.redirect('/manajer/kunjungan')
     }
 })
 
