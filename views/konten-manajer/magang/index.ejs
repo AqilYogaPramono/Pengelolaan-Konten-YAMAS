@@ -22,6 +22,20 @@
                             <a href="/manajer/magang/buat" class="btn btn-primary btn-sm" data-loading>Tambah Magang</a>
                         </div>
 
+                        <form action="/manajer/magang/search" method="POST" class="pengumuman-search-form mb-3" data-loading>
+                            <div class="pengumuman-search">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="form-control" name="judul" placeholder="Cari judul magang..." value="<%= (typeof keyword !== 'undefined' && keyword) ? keyword : '' %>">
+                                    <a href="/manajer/magang" class="search-clear-btn" data-loading aria-label="Bersihkan pencarian">
+                                        <span aria-hidden="true">&times;</span>
+                                    </a>
+                                </div>
+                                <div class="search-actions">
+                                    <button class="btn btn-primary search-submit" type="submit">Cari</button>
+                                </div>
+                            </div>
+                        </form>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-stacked">
                                 <thead>

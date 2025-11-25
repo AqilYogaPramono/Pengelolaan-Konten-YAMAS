@@ -55,10 +55,10 @@
 
                         <h5 class="mb-3">Foto Kegiatan</h5>
                         <% if (Array.isArray(foto) && foto.length) { %>
-                            <div class="image-preview-container">
+                            <div class="image-preview-container magang-photo-container">
                                 <% foto.forEach(function(item){ %>
-                                    <div class="image-preview-item">
-                                        <img src="/images/magang/<%= item.foto %>" data-src="/images/magang/<%= item.foto %>" alt="foto kegiatan magang" class="img-click-preview">
+                                    <div class="image-preview-item magang-photo-item">
+                                        <img src="/images/magang/<%= item.foto %>" data-src="/images/magang/<%= item.foto %>" alt="Foto kegiatan magang" class="img-click-preview magang-photo-full">
                                     </div>
                                 <% }) %>
                             </div>

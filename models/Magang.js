@@ -37,6 +37,16 @@ class Magang {
         }
     }
 
+    static async searchByJudul(keyword) {
+        try {
+            const likeKeyword = `%${keyword}%`
+            const [rows] = await connection.query(`SELECT * FROM magang WHERE judul LIKE ? ORDER BY id DESC`, [likeKeyword])
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
+
     static async getById(id) {
         try {
             const [rows] = await connection.query(`SELECT * FROM magang WHERE id = ?`, [id])
