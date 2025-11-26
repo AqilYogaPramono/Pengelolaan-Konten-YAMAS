@@ -153,19 +153,20 @@ body {
 }
 
 .btn-manajer {
-    color: var(--text-dark);
-    background: var(--accent-color);
-    border-color: var(--accent-color);
+    color: var(--primary-color);
+    background: #ffffff;
+    border-color: transparent;
 }
 
 .btn-manajer:hover {
-    background: var(--accent-dark);
-    border-color: var(--accent-dark);
-    color: var(--text-dark);
+    background: #f5fbff;
+    border-color: transparent;
+    color: var(--primary-dark);
 }
 
 .btn-manajer:active {
-    background: #e6c200;
+    background: #e6f4fb;
+    border-color: transparent;
 }
 
 @media (max-width: 768px) {

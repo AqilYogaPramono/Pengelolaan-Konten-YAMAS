@@ -43,8 +43,7 @@ class Pengumuman {
 
     static async getPengumumanSimple() {
         try {
-            const [rows] = await connection.query(
-                `SELECT id, judul, foto, dibuat_pada FROM pengumuman ORDER BY dibuat_pada DESC`
+            const [rows] = await connection.query(`SELECT id, judul, foto, dibuat_pada FROM pengumuman ORDER BY dibuat_pada DESC`
             )
             return rows
         } catch (err) {
@@ -90,12 +89,8 @@ class Pengumuman {
 
     static async getForAPI() {
         try {
-            const pengumuman = await this.getPengumumanSimple()
-            return pengumuman.map(item => ({
-                id: item.id,
-                foto: item.foto,
-                judul: item.judul
-            }))
+            const [rows] = await connection.query(`SELECT id, judul, foto, dibuat_pada, LEFT(isi, 50) AS isi FROM pengumuman ORDER BY dibuat_pada DESC`)
+        return rows
         } catch (err) {
             throw err
         }
@@ -103,14 +98,8 @@ class Pengumuman {
 
     static async getDetailForAPI(id) {
         try {
-            const pengumuman = await this.getById(id)
-            
-            return {
-                id: pengumuman.id,
-                foto: pengumuman.foto,
-                judul: pengumuman.judul,
-                isi: pengumuman.isi
-            }
+            const [rows] = await connection.query(`SELECT id, judul, foto, dibuat_pada, isi FROM pengumuman WHERE id = ?`, [id])
+            return rows[0]
         } catch (err) {
             throw err
         }

@@ -41,7 +41,7 @@ router.post('/log', async (req, res) => {
         }
 
         const aplikasiKontenManajemen = pegawai.aplikasi.find(
-            app => app.nama_aplikasi == 'konten-manajemen'
+            app => app.nama_aplikasi == 'pengolaan-konten'
         )
 
         if (!aplikasiKontenManajemen || aplikasiKontenManajemen.hak_akses != 'manajer') {

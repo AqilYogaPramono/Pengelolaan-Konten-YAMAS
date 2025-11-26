@@ -138,17 +138,13 @@ class Kunjungan {
 
     static async getAllWithFirstPhoto() {
         try {
-            const kunjungan = await this.getAll()
-            const result = await Promise.all(kunjungan.map(async (item) => {
-                const foto = await this.getFirstPhoto(item.id)
-                return {
-                    id: item.id,
-                    judul: item.judul,
-                    foto: foto,
-                    waktu_kunjungan: item.waktu_kunjungan
-                }
+            const [rows] = await connection.query(`SELECT k.id, k.judul, k.waktu_kunjungan, fk.foto FROM kunjungan k LEFT JOIN foto_kunjungan fk ON k.id = fk.id_kunjungan ORDER BY k.id DESC`)
+            return rows.map(row => ({
+                id: row.id,
+                judul: row.judul,
+                waktu_kunjungan: row.waktu_kunjungan,
+                foto: row.foto
             }))
-            return result
         } catch (err) {
             throw err
         }
@@ -156,12 +152,17 @@ class Kunjungan {
 
     static async getDetailWithPhotos(id) {
         try {
-            const kunjungan = await this.getById(id)
-            const foto = await this.getPhotos(id)
-            return {
-                ...kunjungan,
-                foto: foto.map(item => item.foto)
+            const [rows] = await connection.query(`SELECT k.*, fk.foto FROM kunjungan k LEFT JOIN foto_kunjungan fk ON k.id = fk.id_kunjungan WHERE k.id = ? ORDER BY fk.id DESC`, [id])
+            
+            const kunjungan = {
+                id: rows[0].id,
+                judul: rows[0].judul,
+                deskripsi: rows[0].deskripsi,
+                waktu_kunjungan: rows[0].waktu_kunjungan,
+                foto: rows.map(row => row.foto).filter(foto => foto !== null)
             }
+            
+            return kunjungan
         } catch (err) {
             throw err
         }

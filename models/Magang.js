@@ -138,16 +138,14 @@ class Magang {
 
     static async getAllWithFirstPhoto() {
         try {
-            const magang = await this.getAll()
-            const result = await Promise.all(magang.map(async (item) => {
-                const foto = await this.getFirstPhoto(item.id)
-                return {
-                    id: item.id,
-                    judul: item.judul,
-                    foto: foto
-                }
+            const [rows] = await connection.query(`SELECT m.id, m.judul, m.periode_mulai, m.periode_berakhir, (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto FROM magang m ORDER BY m.id DESC`)
+            return rows.map(row => ({
+                id: row.id,
+                judul: row.judul,
+                periode_mulai: row.periode_mulai,
+                periode_berakhir: row.periode_berakhir,
+                foto: row.foto
             }))
-            return result
         } catch (err) {
             throw err
         }
@@ -155,14 +153,17 @@ class Magang {
 
     static async getDetailWithPhotos(id) {
         try {
-            const magang = await this.getById(id)
-            if (!magang) return null
-            
-            const foto = await this.getPhotos(id)
-            return {
-                ...magang,
-                foto: foto.map(item => item.foto)
+            const [rows] = await connection.query(`SELECT m.*, fkm.foto FROM magang m LEFT JOIN foto_kegiatan_magang fkm ON m.id = fkm.id_magang WHERE m.id = ? ORDER BY fkm.id DESC`, [id])
+            const magang = {
+                id: rows[0].id,
+                judul: rows[0].judul,
+                deskripsi_tugas: rows[0].deskripsi_tugas,
+                periode_mulai: rows[0].periode_mulai,
+                periode_berakhir: rows[0].periode_berakhir,
+                foto: rows.map(row => row.foto).filter(foto => foto !== null)
             }
+            
+            return magang
         } catch (err) {
             throw err
         }

@@ -62,11 +62,7 @@ router.get('/pengumuman/:id', async(req, res) => {
     try {
         const {id} = req.params
         const pengumuman = await Pengumuman.getDetailForAPI(id)
-        
-        if (!pengumuman) {
-            return res.status(404).json({message: 'Data tidak ditemukan'})
-        }
-        
+            
         res.status(200).json({ pengumuman })
     } catch (err) {
         console.error(err)
@@ -114,10 +110,6 @@ router.get('/kunjungan/:id', async(req, res) => {
     try {
         const {id} = req.params
         const kunjungan = await Kunjungan.getDetailWithPhotos(id)
-        
-        if (!kunjungan) {
-            return res.status(404).json({message: 'Data tidak ditemukan'})
-        }
         
         res.status(200).json({ kunjungan })
     } catch (err) {
