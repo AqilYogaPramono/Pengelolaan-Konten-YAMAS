@@ -18,10 +18,10 @@ router.get('/halaman-utama', async(req, res) => {
     }
 })
 
-router.get('/pembimbing', async(req, res) => {
+router.get('/pembina', async(req, res) => {
     try {
-        const pembimbing = await Anggota.getByNamaJabatan('pembimbing')
-        res.status(200).json({ pembimbing })
+        const pembina = await Anggota.getByNamaJabatan('pembina')
+        res.status(200).json({ pembina })
     } catch (err) {
         console.error(err)
         res.status(500).json({message: 'Internal Server Error'})
