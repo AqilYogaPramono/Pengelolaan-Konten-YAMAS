@@ -6,6 +6,10 @@ class Pegawai {
         try {
             const [rows] = await connection.query(`SELECT p.id, p.nama, p.nomor_pegawai, p.status_akun, p.kata_sandi, a.nama_aplikasi, a.hak_akses, pr.periode_mulai, pr.periode_berakhir FROM pegawai AS p LEFT JOIN pegawai_aplikasi AS pa ON p.id = pa.id_pegawai LEFT JOIN aplikasi AS a ON pa.id_aplikasi = a.id LEFT JOIN periode AS pr ON p.id = pr.id_pegawai WHERE p.nomor_pegawai = ?`, [data.nomor_pegawai])
 
+            if (!rows || rows.length == 0) {
+                return null
+            }
+
             const pegawai = {id: rows[0].id, nama: rows[0].nama, nomor_pegawai: rows[0].nomor_pegawai, status_akun: rows[0].status_akun, kata_sandi: rows[0].kata_sandi, periode_mulai: rows[0].periode_mulai, periode_berakhir: rows[0].periode_berakhir,aplikasi: rows.map(r => ({nama_aplikasi: r.nama_aplikasi, hak_akses: r.hak_akses}))}
             return pegawai
         } catch (err) {
