@@ -170,7 +170,7 @@
 
 (function() {
     function setupImagePreview() {
-        $(document).on('change', 'input[type="file"][accept*="image"]', function(e) {
+        $(document).on('change', 'input[type="file"][accept*="image"][data-preview]', function(e) {
             const files = e.target.files;
             const previewId = this.getAttribute('data-preview') || 'previewTambah';
             const preview = document.getElementById(previewId);
@@ -183,6 +183,8 @@
                     reader.onload = function(e) {
                         if (preview) {
                             preview.src = e.target.result;
+                            // pastikan modal pratinjau juga memakai gambar terbaru
+                            preview.setAttribute('data-src', e.target.result);
                             preview.style.display = 'block';
                         }
                     };
@@ -208,6 +210,12 @@
                             }
                         });
                     }
+                }
+            } else {
+                // Jika tidak ada file, sembunyikan preview dan reset src
+                if (preview) {
+                    preview.style.display = 'none';
+                    preview.src = '#';
                 }
             }
         });
