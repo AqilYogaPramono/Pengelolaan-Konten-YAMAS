@@ -36,7 +36,6 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Foto</th>
                                         <th>Judul Pengumuman</th>
                                         <th>Isi Pengumuman</th>
                                         <th style="width: 200px;" class="text-right">Aksi</th>
@@ -49,12 +48,8 @@
                                         <% for (let i = 0; i < pengumuman.length; i++) { const item = pengumuman[i]; %>
                                             <tr>
                                                 <td data-label="No"><%= startNumber + i %></td>
-                                                <td data-label="Foto">
-                                                    <% const fotoPengumuman = item.foto ? ('/images/pengumuman/' + item.foto) : '/images/no-image.png'; %>
-                                                    <img class="img-click-preview table-photo-full" data-src="<%= fotoPengumuman %>" src="<%= fotoPengumuman %>" alt="foto pengumuman">
-                                                </td>
-                                                <td data-label="Judul Pengumuman"><%= item.judul %></td>
-                                                <td data-label="Isi Pengumuman"><%= item.isi ? (item.isi.length > 50 ? item.isi.substring(0, 50) + '...' : item.isi) : '-' %></td>
+                                                <td data-label="Judul Pengumuman"><%= item.judul ? (item.judul.length > 25 ? item.judul.substring(0, 25) + '...' : item.judul) : '-' %></td>
+                                                <td data-label="Isi Pengumuman"><%= item.isi ? (item.isi.length > 80 ? item.isi.substring(0, 80) + '...' : item.isi) : '-' %></td>
                                                 <td class="text-right" data-label="Aksi">
                                                     <div class="btn-actions">
                                                         <a href="/manajer/pengumuman/detail/<%= item.id %>" class="btn btn-sm btn-outline-primary" data-loading>Detail</a>
@@ -64,7 +59,7 @@
                                         <% } %>
                                     <% } else { %>
                                         <tr>
-                                            <td colspan="5" class="text-center">Belum ada data</td>
+                                            <td colspan="4" class="text-center">Belum ada data</td>
                                         </tr>
                                     <% } %>
                                 </tbody>

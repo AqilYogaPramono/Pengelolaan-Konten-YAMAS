@@ -10,7 +10,8 @@
         return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
     }
 
-    const fotoPengumuman = pengumuman && pengumuman.foto ? ('/images/pengumuman/' + pengumuman.foto): '/images/no-image.png'
+    const hasFoto = pengumuman && pengumuman.foto
+    const fotoPengumuman = hasFoto ? ('/images/pengumuman/' + pengumuman.foto) : null
 %>
 
 <div class="main-panel">
@@ -31,9 +32,15 @@
                             </div>
                         </div>
 
-                        <div class="pengumuman-detail-image mb-4">
-                            <img src="<%= fotoPengumuman %>" data-src="<%= fotoPengumuman %>" alt="foto pengumuman" class="img-click-preview pengumuman-detail-photo">
-                        </div>
+                        <% if (hasFoto) { %>
+                            <div class="pengumuman-detail-image mb-4">
+                                <img src="<%= fotoPengumuman %>" data-src="<%= fotoPengumuman %>" alt="foto pengumuman" class="img-click-preview pengumuman-detail-photo">
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state mb-4">
+                                <p class="mb-0 text-muted">Tidak ada foto yang diupload</p>
+                            </div>
+                        <% } %>
 
                         <div class="detail-info mb-4">
                             <div class="info-item">

@@ -13,7 +13,7 @@ class Pengumuman {
     static async getPengumuman(limit, offset) {
         try {
             const [rows] = await connection.query(
-                `SELECT * FROM pengumuman ORDER BY dibuat_pada DESC LIMIT ? OFFSET ?`,
+                `SELECT id, judul, isi FROM pengumuman ORDER BY dibuat_pada DESC LIMIT ? OFFSET ?`,
                 [limit, offset]
             )
             return rows
