@@ -1521,87 +1521,129 @@ nav .pagination li.page-item:not(.disabled):focus-within > a.page-link {
 }
 
 .magang-photo-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
     width: 100%;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    align-items: start;
 }
 
 .magang-photo-container .magang-photo-item {
-    overflow: visible;
+    overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     background: #fff;
     width: fit-content;
-    max-width: 280px;
-    height: fit-content;
-    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     padding: 0;
-    margin: 0;
-    flex-shrink: 0;
+    margin: 0 auto;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.magang-photo-container .magang-photo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .magang-photo-full {
-    width: auto !important;
-    height: auto !important;
-    max-width: 280px;
-    max-height: 400px;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 500px;
     display: block;
-    object-fit: contain !important;
+    object-fit: contain;
     margin: 0;
     padding: 0;
+    border-radius: 12px 12px 0 0;
 }
 
 .magang-photo-container .image-preview-item {
-    height: fit-content !important;
-    min-height: auto !important;
-    width: fit-content !important;
-    max-width: 280px !important;
-    display: inline-block;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    width: fit-content;
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible;
-    flex-shrink: 0;
+    margin: 0 auto !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.magang-photo-container .image-preview-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .magang-photo-container .image-preview-item img.magang-photo-full,
 .magang-photo-container .image-preview-item img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 280px;
-    max-height: 400px !important;
-    object-fit: contain !important;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
     display: block;
     margin: 0;
     padding: 0;
+    border-radius: 12px 12px 0 0;
 }
 
+.magang-photo-container .image-preview-item .image-preview-filename {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #f8fafc;
+    border-radius: 0 0 12px 12px;
+    margin-top: 0;
+}
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
     .magang-photo-container {
-        gap: 0.75rem;
-    }
-    
-    .magang-photo-container .magang-photo-item,
-    .magang-photo-container .image-preview-item {
-        max-width: calc(50% - 0.375rem);
-        width: calc(50% - 0.375rem);
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
     }
     
     .magang-photo-full,
     .magang-photo-container .image-preview-item img.magang-photo-full,
     .magang-photo-container .image-preview-item img {
-        max-width: 100%;
-        max-height: 300px;
+        max-height: 450px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .magang-photo-container {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+    }
+    
+    .magang-photo-full,
+    .magang-photo-container .image-preview-item img.magang-photo-full,
+    .magang-photo-container .image-preview-item img {
+        max-height: 380px;
     }
 }
 
 @media (max-width: 575.98px) {
     .magang-photo-container {
-        gap: 0.75rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
         margin-left: 0;
         margin-right: 0;
         padding-left: 0;
@@ -1611,16 +1653,15 @@ nav .pagination li.page-item:not(.disabled):focus-within > a.page-link {
     .magang-photo-container .magang-photo-item,
     .magang-photo-container .image-preview-item {
         max-width: 100%;
-        width: 100%;
-        margin-left: 0;
-        margin-right: 0;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
     }
     
     .magang-photo-full,
     .magang-photo-container .image-preview-item img.magang-photo-full,
     .magang-photo-container .image-preview-item img {
+        max-height: 400px;
         max-width: 100%;
-        max-height: 250px;
-        width: 100%;
     }
 }
