@@ -58,8 +58,8 @@
                                         <% for (let i = 0; i < kunjungan.length; i++) { const item = kunjungan[i]; %>
                                             <tr>
                                                 <td data-label="No"><%= startNumber + i %></td>
-                                                <td data-label="Judul"><%= item.judul %></td>
-                                                <td data-label="Deskripsi"><%= item.deskripsi ? (item.deskripsi.length > 80 ? item.deskripsi.substring(0, 80) + '...' : item.deskripsi) : '-' %></td>
+                                                <td data-label="Judul"><%= item.judul ? (item.deskripsi.length > 25 ? item.deskripsi.substring(0, 25) + '...' : item.deskripsi) : '-' %></td>
+                                                <td data-label="Deskripsi"><%= item.deskripsi ? (item.deskripsi.length > 70 ? item.deskripsi.substring(0, 70) + '...' : item.deskripsi) : '-' %></td>
                                                 <td data-label="Waktu Kunjungan"><%= formatDate(item.waktu_kunjungan) %></td>
                                                 <td data-label="Aksi" class="text-right">
                                                     <div class="btn-actions">
