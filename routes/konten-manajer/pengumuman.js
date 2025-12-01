@@ -207,9 +207,8 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
 
         const pengumuman = await Pengumuman.getById(id)
 
-        const {judul, isi} = req.body
-        const foto = req.file ? req.file.filename : pengumuman.foto
-        const data = {judul, isi, foto}
+        const {judul, isi, hapus_foto} = req.body
+        let foto = pengumuman.foto
 
         if (!judul) {
             deleteUploadedFile(req.file)
@@ -246,12 +245,15 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
         if (req.file && req.file.path) {
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
-                data.foto = path.basename(result.outputPath)
+                foto = path.basename(result.outputPath)
             }
+            if (pengumuman.foto) deleteOldPhoto(pengumuman.foto)
+        } else if (hapus_foto === '1') {
+            if (pengumuman.foto) deleteOldPhoto(pengumuman.foto)
+            foto = null
         }
 
-        if (req.file && pengumuman.foto) deleteOldPhoto(pengumuman.foto)
-
+        const data = {judul, isi, foto}
         await Pengumuman.update(data, id)
         req.flash('success', 'Data berhasil diperbarui')
         res.redirect('/manajer/pengumuman')
