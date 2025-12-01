@@ -161,6 +161,8 @@
 /* image preview modal top center slide-down */
 .modal-top .modal-dialog {
     margin: 80px auto 1.75rem auto;
+    max-width: 1080px;
+    width: 96vw;
 }
 .modal-top .modal-content {
     border-radius: 10px;
@@ -169,6 +171,22 @@
 @keyframes slide-down-top {
     from { transform: translateY(-16px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+#globalImagePreviewEl {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+}
+
+@media (max-width: 991.98px) {
+    .modal-top .modal-dialog {
+        max-width: 100%;
+        width: 100%;
+        margin: 72px auto 1rem auto;
+    }
 }
 
 /* modal actions alignment */
