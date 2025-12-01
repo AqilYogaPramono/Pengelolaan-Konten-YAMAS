@@ -6,7 +6,6 @@ router.get('/', (req, res) => {
         res.render('index')
     } catch (err) {
         console.error(err)
-        res.status(500).render('error', { message: 'Internal Server Error' })
     }
 })
 
