@@ -56,7 +56,7 @@
                                             <tr>
                                                 <td data-label="No"><%= startNumber + i %></td>
                                                 <td data-label="Judul"><%= item.judul ? (item.judul.length > 20 ? item.judul.substring(0, 20) + '...' : item.judul) : '-'%></td>
-                                                <td data-label="Deskripsi Tugas"><%= item.deskripsi_tugas ? (item.deskripsi_tugas.length > 50 ? item.deskripsi_tugas.substring(0, 50) + '...' : item.deskripsi_tugas) : '-' %></td>
+                                                <td data-label="Deskripsi Tugas"><%= item.deskripsi_tugas ? (item.deskripsi_tugas.length > 40 ? item.deskripsi_tugas.substring(0, 40) + '...' : item.deskripsi_tugas) : '-' %></td>
                                                 <td data-label="Periode Mulai"><%= formatDate(item.periode_mulai) %></td>
                                                 <td data-label="Periode Berakhir"><%= formatDate(item.periode_berakhir) %></td>
                                                 <td data-label="Aksi" class="text-right">
