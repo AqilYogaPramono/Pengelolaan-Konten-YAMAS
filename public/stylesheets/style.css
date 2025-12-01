@@ -9,6 +9,8 @@
     --primary-dark: #0a6fa0;
     --accent-color: #FFD700;
     --accent-dark: #FFA500;
+    --manajer-color: #9D4EDD;
+    --manajer-dark: #7B2CBF;
     --text-dark: #1a1a1a;
     --text-light: #6b7280;
     --border-color: #e5e7eb;
@@ -153,20 +155,27 @@ body {
 }
 
 .btn-manajer {
-    color: var(--primary-color);
-    background: #ffffff;
-    border-color: transparent;
+    color: #ffffff;
+    background: var(--manajer-color);
+    border-color: var(--manajer-color);
+    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+    transform: translateY(0);
+    position: relative;
+    z-index: 2;
 }
 
 .btn-manajer:hover {
-    background: #f5fbff;
-    border-color: transparent;
-    color: var(--primary-dark);
+    background: var(--manajer-dark);
+    border-color: var(--manajer-dark);
+    color: #ffffff;
+    box-shadow: 0 6px 20px rgba(157, 78, 221, 0.5);
+    transform: translateY(-2px);
 }
 
 .btn-manajer:active {
-    background: #e6f4fb;
-    border-color: transparent;
+    background: #6A1B9A;
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(157, 78, 221, 0.3);
 }
 
 @media (max-width: 768px) {
