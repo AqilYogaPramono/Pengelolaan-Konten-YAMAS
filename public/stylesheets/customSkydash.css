@@ -161,12 +161,29 @@
 /* image preview modal top center slide-down */
 .modal-top .modal-dialog {
     margin: 80px auto 1.75rem auto;
-    max-width: 1080px;
-    width: 96vw;
+    max-width: 90vw;
+    width: auto;
+    display: table;
 }
 .modal-top .modal-content {
     border-radius: 10px;
     animation: slide-down-top 220ms ease-out both;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+.modal-top .modal-header {
+    background: #ffffff;
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.modal-top .modal-body {
+    background: #ffffff;
+    padding: 0;
+    display: block;
+    line-height: 0;
 }
 @keyframes slide-down-top {
     from { transform: translateY(-16px); opacity: 0; }
@@ -174,18 +191,25 @@
 }
 
 #globalImagePreviewEl {
-    width: 100% !important;
+    width: auto !important;
     height: auto !important;
+    max-width: 90vw;
     max-height: 80vh;
     object-fit: contain;
     display: block;
+    margin: 0;
+    padding: 0;
 }
 
 @media (max-width: 991.98px) {
     .modal-top .modal-dialog {
-        max-width: 100%;
-        width: 100%;
+        max-width: 95vw;
+        width: auto;
         margin: 72px auto 1rem auto;
+    }
+    #globalImagePreviewEl {
+        max-width: 95vw;
+        max-height: 75vh;
     }
 }
 

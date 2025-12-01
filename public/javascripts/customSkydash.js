@@ -95,7 +95,27 @@
         var modal = document.getElementById('globalImagePreviewModal');
         if (!modal) return;
         var img = modal.querySelector('#globalImagePreviewEl');
-        if (img) img.src = src;
+        if (!img) return;
+        
+        img.style.width = 'auto';
+        img.style.height = 'auto';
+        
+        img.onload = function(){
+            var naturalWidth = this.naturalWidth;
+            var naturalHeight = this.naturalHeight;
+            var maxWidth = window.innerWidth * 0.9;
+            var maxHeight = (window.innerHeight - 200) * 0.8;
+            var ratio = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight, 1);
+            
+            this.style.width = (naturalWidth * ratio) + 'px';
+            this.style.height = (naturalHeight * ratio) + 'px';
+        };
+        
+        if (img.complete && img.naturalWidth > 0) {
+            img.onload();
+        }
+        
+        img.src = src;
         $('#globalImagePreviewModal').modal('show');
     }
 
