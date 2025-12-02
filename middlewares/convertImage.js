@@ -5,14 +5,29 @@ const path = require('path')
 async function convertImageFile(inputPath) {
     if (!inputPath) return null
 
+    const inputExt = path.extname(inputPath).toLowerCase()
     const inputStats = fs.statSync(inputPath)
     const inputSizeKB = inputStats.size / 1024
 
     const dir = path.dirname(inputPath)
-    const baseName = path.basename(inputPath, path.extname(inputPath))
-    const outputPath = path.join(dir, baseName + '.webp')
+    const baseName = path.basename(inputPath, inputExt)
+    
+    let outputPath
+    if (inputExt === '.webp') {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9)
+        outputPath = path.join(dir, baseName + '-' + unique + '.webp')
+    } else {
+        outputPath = path.join(dir, baseName + '.webp')
+    }
 
     fs.mkdirSync(dir, { recursive: true })
+
+    if (inputExt === '.webp' && inputSizeKB < 500) {
+        fs.copyFileSync(inputPath, outputPath)
+        try { fs.unlinkSync(inputPath) } catch (_) {}
+        const newStats = fs.statSync(outputPath)
+        return { outputPath, size: newStats.size }
+    }
 
     if (inputSizeKB < 500) {
         await sharp(inputPath)
@@ -35,10 +50,6 @@ async function convertImageFile(inputPath) {
                 break
             }
             quality -= 10
-        }
-
-        if (!success) {
-            // Keep last produced output even if > 500KB
         }
     }
 

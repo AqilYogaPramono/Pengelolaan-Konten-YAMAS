@@ -1390,7 +1390,6 @@ nav .pagination li.page-item:not(.disabled):focus-within > a.page-link {
 .pengumuman-heading {
     padding-bottom: 1rem;
     margin-bottom: 1.25rem;
-    border-bottom: 1px solid #e5e7eb;
     gap: 1rem;
 }
 .pengumuman-heading__text {
@@ -1403,6 +1402,7 @@ nav .pagination li.page-item:not(.disabled):focus-within > a.page-link {
 }
 .pengumuman-search-form {
     margin-bottom: 1.5rem;
+    border-top: none;
 }
 .pengumuman-search {
     display: flex;
