@@ -26,15 +26,31 @@ const upload = multer({ storage })
 
 const deleteUploadedFile = (file) => {
     if (file) {
-        const filePath = path.join(__dirname, '../../../public/images/anggota', file.filename)
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+        const filePath = path.join(__dirname, '../../public/images/anggota', file.filename)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath)
+            } catch (err) {
+                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
+                    console.error('Error deleting uploaded file:', err)
+                }
+            }
+        }
     }
 }
 
 const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
-        const filePath = path.join(__dirname, '../../../public/images/anggota', oldPhoto)
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+        const filePath = path.join(__dirname, '../../public/images/anggota', oldPhoto)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath)
+            } catch (err) {
+                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
+                    console.error('Error deleting old photo:', err)
+                }
+            }
+        }
     }
 }
 

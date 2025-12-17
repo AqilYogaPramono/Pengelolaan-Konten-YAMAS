@@ -26,14 +26,30 @@ const upload = multer({ storage })
 const deleteUploadedFile = (file) => {
     if (file) {
         const filePath = path.join(__dirname, '../../public/images/halaman-utama', file.filename)
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath)
+            } catch (err) {
+                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
+                    console.error('Error deleting uploaded file:', err)
+                }
+            }
+        }
     }
 }
 
 const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
         const filePath = path.join(__dirname, '../../public/images/halaman-utama', oldPhoto)
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath)
+            } catch (err) {
+                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
+                    console.error('Error deleting old photo:', err)
+                }
+            }
+        }
     }
 }
 
@@ -242,13 +258,15 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
         }
 
         if (req.file && req.file.path) {
+            const oldPhoto = halamanUtama.foto
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
                 data.foto = path.basename(result.outputPath)
+                if (oldPhoto && oldPhoto !== data.foto) {
+                    deleteOldPhoto(oldPhoto)
+                }
             }
         }
-
-        if (req.file) deleteOldPhoto(halamanUtama.foto)
 
         await HalamanUtama.update(data, id)
         req.flash('success', 'Data berhasil diperbarui')

@@ -12,21 +12,19 @@ async function convertImageFile(inputPath) {
     const dir = path.dirname(inputPath)
     const baseName = path.basename(inputPath, inputExt)
     
+    fs.mkdirSync(dir, { recursive: true })
+
+    if (inputExt === '.webp' && inputSizeKB < 500) {
+        const newStats = fs.statSync(inputPath)
+        return { outputPath: inputPath, size: newStats.size }
+    }
+
     let outputPath
     if (inputExt === '.webp') {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9)
         outputPath = path.join(dir, baseName + '-' + unique + '.webp')
     } else {
         outputPath = path.join(dir, baseName + '.webp')
-    }
-
-    fs.mkdirSync(dir, { recursive: true })
-
-    if (inputExt === '.webp' && inputSizeKB < 500) {
-        fs.copyFileSync(inputPath, outputPath)
-        try { fs.unlinkSync(inputPath) } catch (_) {}
-        const newStats = fs.statSync(outputPath)
-        return { outputPath, size: newStats.size }
     }
 
     if (inputSizeKB < 500) {

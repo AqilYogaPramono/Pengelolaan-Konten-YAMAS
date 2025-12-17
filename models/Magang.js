@@ -168,6 +168,61 @@ class Magang {
             throw err
         }
     }
+
+    static async getPaginatedWithFirstPhoto(limit, offset) {
+        try {
+            const [rows] = await connection.query(
+                `SELECT 
+                    m.id, 
+                    m.judul, 
+                    m.periode_mulai, 
+                    m.periode_berakhir, 
+                    (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto 
+                FROM magang m 
+                ORDER BY m.id DESC 
+                LIMIT ? OFFSET ?`, 
+                [limit, offset]
+            )
+
+            return rows.map(row => ({
+                id: row.id,
+                judul: row.judul,
+                periode_mulai: row.periode_mulai,
+                periode_berakhir: row.periode_berakhir,
+                foto: row.foto
+            }))
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async searchByJudulWithPhoto(keyword) {
+        try {
+            const likeKeyword = `%${keyword}%`
+            const [rows] = await connection.query(
+                `SELECT 
+                    m.id, 
+                    m.judul, 
+                    m.periode_mulai, 
+                    m.periode_berakhir, 
+                    (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto 
+                FROM magang m 
+                WHERE m.judul LIKE ? 
+                ORDER BY m.id DESC`,
+                [likeKeyword]
+            )
+
+            return rows.map(row => ({
+                id: row.id,
+                judul: row.judul,
+                periode_mulai: row.periode_mulai,
+                periode_berakhir: row.periode_berakhir,
+                foto: row.foto
+            }))
+        } catch (err) {
+            throw err
+        }
+    }
 }
 
 module.exports = Magang
