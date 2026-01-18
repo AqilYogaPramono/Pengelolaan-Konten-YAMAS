@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const Pegawai = require('../../models/Pegawai')
 const Magang = require('../../models/Magang')
@@ -35,6 +36,34 @@ const deleteStoredPhoto = (filename) => {
     if (!filename) return
     const filePath = path.join(__dirname, '../../public/images/magang', filename)
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+}
+
+const deleteStoredCover = (filename) => {
+    if (!filename) return
+    const filePath = path.join(__dirname, '../../public/images/magang', filename)
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+}
+
+const checkImageDimensions = async (filePath, requiredWidth = 3240, requiredHeight = 1272) => {
+    try {
+        const metadata = await sharp(filePath).metadata()
+        return metadata.width === requiredWidth && metadata.height === requiredHeight
+    } catch (err) {
+        console.error('Error checking image dimensions:', err)
+        return false
+    }
+}
+
+const processUploadedCover = async (file) => {
+    if (!file) return null
+    let finalName = file.filename
+    if (file.path) {
+        const converted = await convertImageFile(file.path)
+        if (converted && converted.outputPath) {
+            finalName = path.basename(converted.outputPath)
+        }
+    }
+    return finalName
 }
 
 const processUploadedPhotos = async (files = []) => {
@@ -132,44 +161,69 @@ router.get('/buat', authManajer, async (req, res) => {
     }
 })
 
-router.post('/create', authManajer, upload.array('foto', 10), async (req, res) => {
-    const files = req.files || []
-    try {
-        const { judul, deskripsi_tugas, periode_mulai, periode_berakhir } = req.body
-        const data = { judul, deskripsi_tugas, periode_mulai, periode_berakhir }
+router.post('/create', authManajer, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'foto' }]), async (req, res) => {
+        const coverFile = req.files?.cover?.[0] || null
+        const files = req.files?.foto || []
 
-        if (!judul || !deskripsi_tugas || !periode_mulai || !periode_berakhir) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Semua field wajib diisi')
-            req.flash('data', data)
-            return res.redirect('/manajer/magang/buat')
-        }
+        try {
+            const { judul, deskripsi_tugas, periode_mulai, periode_berakhir } = req.body
+            const data = { judul, deskripsi_tugas, periode_mulai, periode_berakhir }
 
-        const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-        if (files.some(file => !allowedFormats.includes(file.mimetype))) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
-            req.flash('data', data)
-            return res.redirect('/manajer/magang/buat')
-        }
+            if (!judul || !deskripsi_tugas || !periode_mulai || !periode_berakhir || !coverFile || files.length === 0 ) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua field wajib diisi')
+                req.flash('data', data)
+                return res.redirect('/manajer/magang/buat')
+            }
 
-        const result = await Magang.store(data)
-        const magangId = result.insertId
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
 
-        if (files.length) {
+            if (!allowedFormats.includes(coverFile.mimetype)) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Cover harus berupa gambar (jpg, jpeg, png, webp)')
+                req.flash('data', data)
+                return res.redirect('/manajer/magang/buat')
+            }
+
+            if (files.some(file => !allowedFormats.includes(file.mimetype))) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua foto harus berupa gambar (jpg, jpeg, png, webp)')
+                req.flash('data', data)
+                return res.redirect('/manajer/magang/buat')
+            }
+
+            const isValidDimensions = await checkImageDimensions(coverFile.path)
+            if (!isValidDimensions) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Dimensi gambar cover harus 3240x1272 pixel')
+                req.flash('data', data)
+                return res.redirect('/manajer/magang/buat')
+            }
+
+            const processedCover = await processUploadedCover(coverFile)
+            data.cover = processedCover
+
+            const result = await Magang.store(data)
+            const magangId = result.insertId
+
             const processedPhotos = await processUploadedPhotos(files)
             await Magang.addPhotos(magangId, processedPhotos)
-        }
 
-        req.flash('success', 'Data magang berhasil ditambahkan')
-        res.redirect('/manajer/magang')
-    } catch (err) {
-        console.error(err)
-        deleteUploadedFiles(req.files)
-        req.flash('error', 'Internal Server Error')
-        res.redirect('/manajer/magang')
+            req.flash('success', 'Data magang berhasil ditambahkan')
+            res.redirect('/manajer/magang')
+        } catch (err) {
+            console.error(err)
+            deleteUploadedFiles(req.files?.foto || [])
+            if (req.files?.cover?.[0]) deleteUploadedFiles([req.files.cover[0]])
+            req.flash('error', 'Internal Server Error')
+            res.redirect('/manajer/magang')
+        }
     }
-})
+)
 
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
@@ -196,59 +250,105 @@ router.get('/edit/:id', authManajer, async (req, res) => {
     }
 })
 
-router.post('/update/:id', authManajer, upload.array('foto', 10), async (req, res) => {
-    const files = req.files || []
-    try {
-        const { id } = req.params
-        const magang = await Magang.getById(id)
+router.post('/update/:id', authManajer, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'foto' }]), async (req, res) => {
+    const coverFile = req.files?.cover?.[0] || null
+    const files = req.files?.foto || []
 
-        if (!magang) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Data tidak ditemukan')
-            return res.redirect('/manajer/magang')
+        try {
+            const { id } = req.params
+            const magang = await Magang.getById(id)
+
+            if (!magang) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Data tidak ditemukan')
+                return res.redirect('/manajer/magang')
+            }
+
+            const { judul, deskripsi_tugas, periode_mulai, periode_berakhir } = req.body
+
+            if (!judul || !deskripsi_tugas || !periode_mulai || !periode_berakhir) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua field wajib diisi')
+                return res.redirect(`/manajer/magang/edit/${id}`)
+            }
+
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+
+            if (coverFile && !allowedFormats.includes(coverFile.mimetype)) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Cover harus berupa gambar (jpg, jpeg, png, webp)')
+                return res.redirect(`/manajer/magang/edit/${id}`)
+            }
+
+            if (files.some(file => !allowedFormats.includes(file.mimetype))) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua foto harus berupa gambar (jpg, jpeg, png, webp)')
+                return res.redirect(`/manajer/magang/edit/${id}`)
+            }
+
+            if (coverFile && coverFile.path) {
+                const isValidDimensions = await checkImageDimensions(coverFile.path)
+                if (!isValidDimensions) {
+                    deleteUploadedFiles(files)
+                    deleteUploadedFiles([coverFile])
+                    req.flash('error', 'Dimensi gambar cover harus 3240x1272 pixel')
+                    return res.redirect(`/manajer/magang/edit/${id}`)
+                }
+            }
+
+            let hapusFoto = req.body.hapus_foto || []
+            if (!Array.isArray(hapusFoto)) hapusFoto = [hapusFoto]
+            hapusFoto = hapusFoto.filter(Boolean)
+
+            const fotoLama = await Magang.getPhotosByMagangId(id)
+            const sisaFotoLama = fotoLama.filter(f => !hapusFoto.includes(String(f.id)))
+
+            if (sisaFotoLama.length === 0 && files.length === 0) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Minimal harus ada 1 foto kegiatan')
+                return res.redirect(`/manajer/magang/edit/${id}`)
+            }
+
+            const updateData = { judul, deskripsi_tugas, periode_mulai, periode_berakhir }
+
+            if (coverFile) {
+                if (magang.cover) {
+                    deleteStoredCover(magang.cover)
+                }
+                const processedCover = await processUploadedCover(coverFile)
+                updateData.cover = processedCover
+            }
+
+            await Magang.update(updateData, id)
+
+            if (hapusFoto.length) {
+                const existingPhotos = await Magang.getPhotosByIds(hapusFoto)
+                existingPhotos.forEach(photo => deleteStoredPhoto(photo.foto))
+                await Magang.deletePhotosByIds(hapusFoto)
+            }
+
+            if (files.length) {
+                const processedPhotos = await processUploadedPhotos(files)
+                await Magang.addPhotos(id, processedPhotos)
+            }
+
+            req.flash('success', 'Data magang berhasil diperbarui')
+            res.redirect(`/manajer/magang/detail/${id}`)
+        } catch (err) {
+            console.error(err)
+            deleteUploadedFiles(req.files?.foto || [])
+            if (req.files?.cover?.[0]) deleteUploadedFiles([req.files.cover[0]])
+            req.flash('error', 'Internal Server Error')
+            res.redirect('/manajer/magang')
         }
-
-        const { judul, deskripsi_tugas, periode_mulai, periode_berakhir } = req.body
-
-        if (!judul || !deskripsi_tugas || !periode_mulai || !periode_berakhir) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Semua field wajib diisi')
-            return res.redirect(`/manajer/magang/edit/${id}`)
-        }
-
-        const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-        if (files.some(file => !allowedFormats.includes(file.mimetype))) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
-            return res.redirect(`/manajer/magang/edit/${id}`)
-        }
-
-        await Magang.update({ judul, deskripsi_tugas, periode_mulai, periode_berakhir }, id)
-
-        let hapusFoto = req.body.hapus_foto || []
-        if (!Array.isArray(hapusFoto)) hapusFoto = [hapusFoto]
-        hapusFoto = hapusFoto.filter(Boolean)
-
-        if (hapusFoto.length) {
-            const existingPhotos = await Magang.getPhotosByIds(hapusFoto)
-            existingPhotos.forEach(photo => deleteStoredPhoto(photo.foto))
-            await Magang.deletePhotosByIds(hapusFoto)
-        }
-
-        if (files.length) {
-            const processedPhotos = await processUploadedPhotos(files)
-            await Magang.addPhotos(id, processedPhotos)
-        }
-
-        req.flash('success', 'Data magang berhasil diperbarui')
-        res.redirect(`/manajer/magang/detail/${id}`)
-    } catch (err) {
-        console.error(err)
-        deleteUploadedFiles(req.files)
-        req.flash('error', 'Internal Server Error')
-        res.redirect('/manajer/magang')
     }
-})
+)
+
 
 router.post('/hapus/:id', authManajer, async (req, res) => {
     try {
@@ -262,6 +362,10 @@ router.post('/hapus/:id', authManajer, async (req, res) => {
 
         const foto = await Magang.getPhotos(id)
         foto.forEach(item => deleteStoredPhoto(item.foto))
+
+        if (magang.cover) {
+            deleteStoredCover(magang.cover)
+        }
 
         await Magang.delete(id)
         req.flash('success', 'Data magang berhasil dihapus')

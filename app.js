@@ -8,8 +8,6 @@ const session = require('express-session')
 const flash = require('express-flash')
 const cors = require('cors')
 
-const { onlyDomain } = require('./middlewares/cors-option')
-
 const indexRouter = require('./routes/index')
 const authRouter = require('./routes/auth')
 const APIRouter = require('./routes/API')

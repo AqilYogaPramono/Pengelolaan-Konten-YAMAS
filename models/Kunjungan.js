@@ -136,20 +136,6 @@ class Kunjungan {
         }
     }
 
-    static async getAllWithFirstPhoto() {
-        try {
-            const [rows] = await connection.query(`SELECT k.id, k.judul, k.waktu_kunjungan, (SELECT foto FROM foto_kunjungan WHERE id_kunjungan = k.id ORDER BY id ASC LIMIT 1) AS foto FROM kunjungan k ORDER BY k.id DESC`)
-            return rows.map(row => ({
-                id: row.id,
-                judul: row.judul,
-                waktu_kunjungan: row.waktu_kunjungan,
-                foto: row.foto
-            }))
-        } catch (err) {
-            throw err
-        }
-    }
-
     static async getDetailWithPhotos(id) {
         try {
             const [rows] = await connection.query(`SELECT k.*, fk.foto FROM kunjungan k LEFT JOIN foto_kunjungan fk ON k.id = fk.id_kunjungan WHERE k.id = ? ORDER BY fk.id DESC`, [id])
@@ -170,24 +156,8 @@ class Kunjungan {
 
     static async getPaginatedWithFirstPhoto(limit, offset) {
         try {
-            const [rows] = await connection.query(
-                `SELECT 
-                    k.id, 
-                    k.judul, 
-                    k.waktu_kunjungan, 
-                    (SELECT foto FROM foto_kunjungan WHERE id_kunjungan = k.id ORDER BY id ASC LIMIT 1) AS foto 
-                FROM kunjungan k 
-                ORDER BY k.id DESC 
-                LIMIT ? OFFSET ?`, 
-                [limit, offset]
-            )
-
-            return rows.map(row => ({
-                id: row.id,
-                judul: row.judul,
-                waktu_kunjungan: row.waktu_kunjungan,
-                foto: row.foto
-            }))
+            const [rows] = await connection.query(`SELECT id, judul, cover, waktu_kunjungan FROM kunjungan ORDER BY id DESC LIMIT ? OFFSET ?`, [limit, offset])
+            return rows
         } catch (err) {
             throw err
         }
@@ -196,24 +166,24 @@ class Kunjungan {
     static async searchByJudulWithPhoto(keyword) {
         try {
             const likeKeyword = `%${keyword}%`
-            const [rows] = await connection.query(
-                `SELECT 
-                    k.id, 
-                    k.judul, 
-                    k.waktu_kunjungan, 
-                    (SELECT foto FROM foto_kunjungan WHERE id_kunjungan = k.id ORDER BY id ASC LIMIT 1) AS foto 
-                FROM kunjungan k 
-                WHERE k.judul LIKE ? 
-                ORDER BY k.id DESC`,
-                [likeKeyword]
-            )
+            const [rows] = await connection.query(`SELECT k.id, k.judul, k.cover, k.waktu_kunjungan, (SELECT foto FROM foto_kunjungan WHERE id_kunjungan = k.id ORDER BY id ASC LIMIT 1) AS foto FROM kunjungan k WHERE k.judul LIKE ? ORDER BY k.id DESC`, [likeKeyword])
 
             return rows.map(row => ({
                 id: row.id,
                 judul: row.judul,
+                cover: row.cover,
                 waktu_kunjungan: row.waktu_kunjungan,
                 foto: row.foto
             }))
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async getPhotosByKunjunganId(id) {
+        try {
+            const [rows] = await connection.query(`SELECT id, foto FROM foto_kunjungan WHERE id_kunjungan = ?`, [id])
+            return rows
         } catch (err) {
             throw err
         }

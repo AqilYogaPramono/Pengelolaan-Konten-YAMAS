@@ -439,3 +439,61 @@
         initImagePreviewManagers();
     }
 })();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const removeBtn = document.querySelector('.existing-foto-remove');
+    const previewImg = document.getElementById('previewEdit');
+    const hapusFotoInput = document.getElementById('hapusFotoInput');
+    const fileInput = document.getElementById('foto_pengumuman');
+    
+    if (removeBtn && hapusFotoInput) {
+        removeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            hapusFotoInput.value = '1';
+            previewImg.style.opacity = '0.5';
+            previewImg.style.pointerEvents = 'none';
+            removeBtn.style.opacity = '0.5';
+            removeBtn.style.pointerEvents = 'none';
+        });
+    }
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0 && hapusFotoInput) {
+                hapusFotoInput.value = '';
+                if (previewImg) {
+                    previewImg.style.opacity = '1';
+                    previewImg.style.pointerEvents = 'auto';
+                }
+                if (removeBtn) {
+                    removeBtn.style.opacity = '1';
+                    removeBtn.style.pointerEvents = 'auto';
+                }
+            }
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle existing foto remove button
+    const existingContainer = document.getElementById('existingFotoContainer');
+    if (existingContainer) {
+        existingContainer.addEventListener('click', function(e) {
+            const removeBtn = e.target.closest('.existing-foto-remove');
+            if (removeBtn) {
+                e.stopPropagation();
+                const fotoId = removeBtn.getAttribute('data-foto-id');
+                const item = removeBtn.closest('.image-preview-item');
+                const hiddenInput = item.querySelector('.hapus-foto-input');
+                
+                if (hiddenInput) {
+                    hiddenInput.value = fotoId;
+                    item.style.opacity = '0.5';
+                    item.style.pointerEvents = 'none';
+                }
+            }
+        });
+    }
+});

@@ -34,7 +34,7 @@
                                     </div>
                                 <% } else { %>
                                     <div class="mt-2">
-                                        <img id="previewEdit" src="/images/no-image.png" data-src="/images/no-image.png" alt="foto pengumuman" style="width:auto;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;background:#f4f6fb;margin-left:0;margin-right:0;display:none;" class="img-click-preview d-none">
+                                        <img id="previewEdit" src="/images/no-image.png" data-src="/images/no-image.png" alt="foto pengumuman" style="width:auto;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;background:#f4f6fb;margin-left:0;margin-right:0;display:none;" class="img-click-preview">
                                     </div>
                                 <% } %>
                             </div>
@@ -68,41 +68,3 @@
 </div>
 
 <%- include('../../partials/scripts/__script-dashboard.ejs') %>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const removeBtn = document.querySelector('.existing-foto-remove');
-    const previewImg = document.getElementById('previewEdit');
-    const hapusFotoInput = document.getElementById('hapusFotoInput');
-    const fileInput = document.getElementById('foto_pengumuman');
-    
-    if (removeBtn && hapusFotoInput) {
-        removeBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            
-            hapusFotoInput.value = '1';
-            previewImg.style.opacity = '0.5';
-            previewImg.style.pointerEvents = 'none';
-            removeBtn.style.opacity = '0.5';
-            removeBtn.style.pointerEvents = 'none';
-        });
-    }
-    
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0 && hapusFotoInput) {
-                hapusFotoInput.value = '';
-                if (previewImg) {
-                    previewImg.style.opacity = '1';
-                    previewImg.style.pointerEvents = 'auto';
-                }
-                if (removeBtn) {
-                    removeBtn.style.opacity = '1';
-                    removeBtn.style.pointerEvents = 'auto';
-                }
-            }
-        });
-    }
-});
-</script>

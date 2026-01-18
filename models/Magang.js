@@ -126,26 +126,8 @@ class Magang {
 
     static async getFirstPhoto(idMagang) {
         try {
-            const [rows] = await connection.query(
-                `SELECT foto FROM foto_kegiatan_magang WHERE id_magang = ? ORDER BY id ASC LIMIT 1`,
-                [idMagang]
-            )
+            const [rows] = await connection.query(`SELECT foto FROM foto_kegiatan_magang WHERE id_magang = ? ORDER BY id ASC LIMIT 1`,[idMagang])
             return rows[0].foto
-        } catch (err) {
-            throw err
-        }
-    }
-
-    static async getAllWithFirstPhoto() {
-        try {
-            const [rows] = await connection.query(`SELECT m.id, m.judul, m.periode_mulai, m.periode_berakhir, (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto FROM magang m ORDER BY m.id DESC`)
-            return rows.map(row => ({
-                id: row.id,
-                judul: row.judul,
-                periode_mulai: row.periode_mulai,
-                periode_berakhir: row.periode_berakhir,
-                foto: row.foto
-            }))
         } catch (err) {
             throw err
         }
@@ -162,7 +144,6 @@ class Magang {
                 periode_berakhir: rows[0].periode_berakhir,
                 foto: rows.map(row => row.foto).filter(foto => foto !== null)
             }
-            
             return magang
         } catch (err) {
             throw err
@@ -171,22 +152,21 @@ class Magang {
 
     static async getPaginatedWithFirstPhoto(limit, offset) {
         try {
-            const [rows] = await connection.query(
-                `SELECT 
-                    m.id, 
-                    m.judul, 
-                    m.periode_mulai, 
-                    m.periode_berakhir, 
-                    (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto 
-                FROM magang m 
-                ORDER BY m.id DESC 
-                LIMIT ? OFFSET ?`, 
-                [limit, offset]
-            )
+            const [rows] = await connection.query(`select id, judul, cover, periode_mulai, periode_berakhir from magang ORDER BY id DESC LIMIT ? OFFSET ?`, [limit, offset])
+            return rows
+        } catch (err) {
+            throw err
+        }
+    }
 
+    static async searchByJudulWithPhoto(keyword) {
+        try {
+            const likeKeyword = `%${keyword}%`
+            const [rows] = await connection.query(`SELECT m.id, m.judul, m.cover,m.periode_mulai, m.periode_berakhir, (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto FROM magang m WHERE m.judul LIKE ? ORDER BY m.id DESC`,[likeKeyword])
             return rows.map(row => ({
                 id: row.id,
                 judul: row.judul,
+                cover: row.cover,
                 periode_mulai: row.periode_mulai,
                 periode_berakhir: row.periode_berakhir,
                 foto: row.foto
@@ -196,29 +176,10 @@ class Magang {
         }
     }
 
-    static async searchByJudulWithPhoto(keyword) {
+    static async getPhotosByMagangId(id) {
         try {
-            const likeKeyword = `%${keyword}%`
-            const [rows] = await connection.query(
-                `SELECT 
-                    m.id, 
-                    m.judul, 
-                    m.periode_mulai, 
-                    m.periode_berakhir, 
-                    (SELECT foto FROM foto_kegiatan_magang WHERE id_magang = m.id ORDER BY id ASC LIMIT 1) AS foto 
-                FROM magang m 
-                WHERE m.judul LIKE ? 
-                ORDER BY m.id DESC`,
-                [likeKeyword]
-            )
-
-            return rows.map(row => ({
-                id: row.id,
-                judul: row.judul,
-                periode_mulai: row.periode_mulai,
-                periode_berakhir: row.periode_berakhir,
-                foto: row.foto
-            }))
+            const [rows] = await connection.query(`SELECT id, foto FROM foto_kegiatan_magang WHERE id_magang = ?`,[id])
+            return rows
         } catch (err) {
             throw err
         }

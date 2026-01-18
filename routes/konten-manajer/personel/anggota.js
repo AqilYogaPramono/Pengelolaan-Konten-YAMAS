@@ -26,31 +26,15 @@ const upload = multer({ storage })
 
 const deleteUploadedFile = (file) => {
     if (file) {
-        const filePath = path.join(__dirname, '../../public/images/anggota', file.filename)
-        if (fs.existsSync(filePath)) {
-            try {
-                fs.unlinkSync(filePath)
-            } catch (err) {
-                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
-                    console.error('Error deleting uploaded file:', err)
-                }
-            }
-        }
+        const filePath = path.join(__dirname, '../../../ublic/images/anggota', file.filename)
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
     }
 }
 
 const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
-        const filePath = path.join(__dirname, '../../public/images/anggota', oldPhoto)
-        if (fs.existsSync(filePath)) {
-            try {
-                fs.unlinkSync(filePath)
-            } catch (err) {
-                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
-                    console.error('Error deleting old photo:', err)
-                }
-            }
-        }
+        const filePath = path.join(__dirname, '../../../public/images/anggota', oldPhoto)
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
     }
 }
 
@@ -254,6 +238,7 @@ router.post('/hapus/:id', authManajer, async (req, res) => {
         const {id} = req.params
 
         const anggota = await Anggota.getById(id)
+        console.log(anggota.foto)
         if (anggota && anggota.foto) {
             deleteOldPhoto(anggota.foto)
         }

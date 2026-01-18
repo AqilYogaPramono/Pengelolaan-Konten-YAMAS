@@ -36,6 +36,17 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="cover">Ganti Foto Cover</label>
+                                <input type="file" class="form-control" id="cover" name="cover" accept="image/*" data-preview="previewCover">
+                                <small class="form-text text-muted">
+                                    Format diperbolehkan: jpg, jpeg, png, webp dan Dimensi gambar harus 3240x1272 pixel
+                                </small>
+                                <div class="mt-2">
+                                    <img id="previewCover" src="<%= magang.cover ? ('/images/magang/' + magang.cover) : '/images/no-image.png' %>" data-src="<%= magang.cover ? ('/images/magang/' + magang.cover) : '/images/no-image.png' %>" alt="foto cover magang" style="width:auto;max-width:100%;max-height:300px;height:auto;border-radius:8px;object-fit:contain;cursor:zoom-in;background:#f4f6fb;display:block;margin-left:0;margin-right:0;" class="img-click-preview" >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label>Foto Kegiatan Saat Ini</label>
                                 <div id="existingFotoContainer" class="image-preview-container magang-photo-container">
                                     <% if (Array.isArray(foto) && foto.length) { %>
@@ -90,27 +101,3 @@
 </div>
 
 <%- include('../../partials/scripts/__script-dashboard.ejs') %>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle existing foto remove button
-    const existingContainer = document.getElementById('existingFotoContainer');
-    if (existingContainer) {
-        existingContainer.addEventListener('click', function(e) {
-            const removeBtn = e.target.closest('.existing-foto-remove');
-            if (removeBtn) {
-                e.stopPropagation();
-                const fotoId = removeBtn.getAttribute('data-foto-id');
-                const item = removeBtn.closest('.image-preview-item');
-                const hiddenInput = item.querySelector('.hapus-foto-input');
-                
-                if (hiddenInput) {
-                    hiddenInput.value = fotoId;
-                    item.style.opacity = '0.5';
-                    item.style.pointerEvents = 'none';
-                }
-            }
-        });
-    }
-});
-</script>

@@ -31,6 +31,14 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="cover">Foto Cover</label>
+                                <input type="file" class="form-control" id="cover" name="cover" accept="image/*" required data-preview="previewCover">
+                                <small class="form-text text-muted"> Format yang diperbolehkan: jpg, jpeg, png, webp. Dimensi gambar harus 3240x1272 pixel. </small>
+                                <div class="mt-2"> <img id="previewCover" src="#" alt="preview" style="width:auto;max-width:100%;max-height:300px;height:auto;border-radius:8px;display:none;cursor:zoom-in;object-fit:contain;background:#f4f6fb;" class="img-click-preview" >
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="foto_kegiatan">Foto Kegiatan (Dapat Memilih Lebih dari Satu)</label>
                                 <input type="file" class="form-control" id="foto_kegiatan" name="foto" accept="image/*" multiple data-preview-container="previewFotoContainer">
                                 <small class="form-text text-muted">Format yang diperbolehkan: jpg, jpeg, png, webp.</small>

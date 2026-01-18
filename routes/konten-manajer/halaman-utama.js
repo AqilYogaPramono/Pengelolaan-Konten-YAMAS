@@ -26,37 +26,21 @@ const upload = multer({ storage })
 const deleteUploadedFile = (file) => {
     if (file) {
         const filePath = path.join(__dirname, '../../public/images/halaman-utama', file.filename)
-        if (fs.existsSync(filePath)) {
-            try {
-                fs.unlinkSync(filePath)
-            } catch (err) {
-                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
-                    console.error('Error deleting uploaded file:', err)
-                }
-            }
-        }
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
     }
 }
 
 const deleteOldPhoto = (oldPhoto) => {
     if (oldPhoto) {
         const filePath = path.join(__dirname, '../../public/images/halaman-utama', oldPhoto)
-        if (fs.existsSync(filePath)) {
-            try {
-                fs.unlinkSync(filePath)
-            } catch (err) {
-                if (err.code !== 'EBUSY' && err.code !== 'ENOENT') {
-                    console.error('Error deleting old photo:', err)
-                }
-            }
-        }
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
     }
 }
 
 const checkImageDimensions = async (filePath, requiredWidth = 3240, requiredHeight = 1272) => {
     try {
         const metadata = await sharp(filePath).metadata()
-        return metadata.width === requiredWidth && metadata.height === requiredHeight
+        return metadata.width == requiredWidth && metadata.height == requiredHeight
     } catch (err) {
         console.error('Error checking image dimensions:', err)
         return false
@@ -258,14 +242,14 @@ router.post('/update/:id', authManajer, upload.single('foto'), async (req, res) 
         }
 
         if (req.file && req.file.path) {
-            const oldPhoto = halamanUtama.foto
             const result = await convertImageFile(req.file.path)
             if (result && result.outputPath) {
                 data.foto = path.basename(result.outputPath)
-                if (oldPhoto && oldPhoto !== data.foto) {
-                    deleteOldPhoto(oldPhoto)
-                }
             }
+        }
+
+        if (halamanUtama && halamanUtama.foto) {
+            deleteOldPhoto(halamanUtama.foto)
         }
 
         await HalamanUtama.update(data, id)

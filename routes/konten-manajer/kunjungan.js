@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const multer = require('multer')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const Pegawai = require('../../models/Pegawai')
 const Kunjungan = require('../../models/Kunjungan')
@@ -35,6 +36,34 @@ const deleteStoredPhoto = (filename) => {
     if (!filename) return
     const filePath = path.join(__dirname, '../../public/images/kunjungan', filename)
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+}
+
+const deleteStoredCover = (filename) => {
+    if (!filename) return
+    const filePath = path.join(__dirname, '../../public/images/kunjungan', filename)
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+}
+
+const checkImageDimensions = async (filePath, requiredWidth = 3240, requiredHeight = 1272) => {
+    try {
+        const metadata = await sharp(filePath).metadata()
+        return metadata.width === requiredWidth && metadata.height === requiredHeight
+    } catch (err) {
+        console.error('Error checking image dimensions:', err)
+        return false
+    }
+}
+
+const processUploadedCover = async (file) => {
+    if (!file) return null
+    let finalName = file.filename
+    if (file.path) {
+        const converted = await convertImageFile(file.path)
+        if (converted && converted.outputPath) {
+            finalName = path.basename(converted.outputPath)
+        }
+    }
+    return finalName
 }
 
 const processUploadedPhotos = async (files = []) => {
@@ -132,44 +161,69 @@ router.get('/buat', authManajer, async (req, res) => {
     }
 })
 
-router.post('/create', authManajer, upload.array('foto', 10), async (req, res) => {
-    const files = req.files || []
-    try {
-        const { judul, deskripsi, waktu_kunjungan } = req.body
-        const data = { judul, deskripsi, waktu_kunjungan }
+router.post('/create', authManajer, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'foto' }]), async (req, res) => {
+    const coverFile = req.files?.cover?.[0] || null
+    const files = req.files?.foto || []
 
-        if (!judul || !deskripsi || !waktu_kunjungan) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Semua field wajib diisi')
-            req.flash('data', data)
-            return res.redirect('/manajer/kunjungan/buat')
-        }
+        try {
+            const { judul, deskripsi, waktu_kunjungan } = req.body
+            const data = { judul, deskripsi, waktu_kunjungan }
 
-        const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-        if (files.some(file => !allowedFormats.includes(file.mimetype))) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
-            req.flash('data', data)
-            return res.redirect('/manajer/kunjungan/buat')
-        }
+            if (!judul || !deskripsi || !waktu_kunjungan || !coverFile || files.length === 0) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua field wajib diisi')
+                req.flash('data', data)
+                return res.redirect('/manajer/kunjungan/buat')
+            }
 
-        const result = await Kunjungan.store(data)
-        const kunjunganId = result.insertId
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
 
-        if (files.length) {
+            if (!allowedFormats.includes(coverFile.mimetype)) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Cover harus berupa gambar (jpg, jpeg, png, webp)')
+                req.flash('data', data)
+                return res.redirect('/manajer/kunjungan/buat')
+            }
+
+            if (files.some(file => !allowedFormats.includes(file.mimetype))) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua foto harus berupa gambar (jpg, jpeg, png, webp)')
+                req.flash('data', data)
+                return res.redirect('/manajer/kunjungan/buat')
+            }
+
+            const isValidDimensions = await checkImageDimensions(coverFile.path)
+            if (!isValidDimensions) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Dimensi gambar cover harus 3240x1272 pixel')
+                req.flash('data', data)
+                return res.redirect('/manajer/kunjungan/buat')
+            }
+
+            const processedCover = await processUploadedCover(coverFile)
+            data.cover = processedCover
+
+            const result = await Kunjungan.store(data)
+            const kunjunganId = result.insertId
+
             const processedPhotos = await processUploadedPhotos(files)
             await Kunjungan.addPhotos(kunjunganId, processedPhotos)
-        }
 
-        req.flash('success', 'Data kunjungan berhasil ditambahkan')
-        res.redirect('/manajer/kunjungan')
-    } catch (err) {
-        console.error(err)
-        deleteUploadedFiles(req.files)
-        req.flash('error', 'Internal Server Error')
-        res.redirect('/manajer/kunjungan')
+            req.flash('success', 'Data kunjungan berhasil ditambahkan')
+            res.redirect('/manajer/kunjungan')
+        } catch (err) {
+            console.error(err)
+            deleteUploadedFiles(req.files?.foto || [])
+            if (req.files?.cover?.[0]) deleteUploadedFiles([req.files.cover[0]])
+            req.flash('error', 'Internal Server Error')
+            res.redirect('/manajer/kunjungan')
+        }
     }
-})
+)
 
 router.get('/edit/:id', authManajer, async (req, res) => {
     try {
@@ -196,59 +250,104 @@ router.get('/edit/:id', authManajer, async (req, res) => {
     }
 })
 
-router.post('/update/:id', authManajer, upload.array('foto', 10), async (req, res) => {
-    const files = req.files || []
-    try {
-        const { id } = req.params
-        const kunjungan = await Kunjungan.getById(id)
+router.post('/update/:id', authManajer, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'foto' }]), async (req, res) => {
+    const coverFile = req.files?.cover?.[0] || null
+    const files = req.files?.foto || []
 
-        if (!kunjungan) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Data tidak ditemukan')
-            return res.redirect('/manajer/kunjungan')
+        try {
+            const { id } = req.params
+            const kunjungan = await Kunjungan.getById(id)
+
+            if (!kunjungan) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Data tidak ditemukan')
+                return res.redirect('/manajer/kunjungan')
+            }
+
+            const { judul, deskripsi, waktu_kunjungan } = req.body
+
+            if (!judul || !deskripsi || !waktu_kunjungan) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua field wajib diisi')
+                return res.redirect(`/manajer/kunjungan/edit/${id}`)
+            }
+
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+
+            if (coverFile && !allowedFormats.includes(coverFile.mimetype)) {
+                deleteUploadedFiles(files)
+                deleteUploadedFiles([coverFile])
+                req.flash('error', 'Cover harus berupa gambar (jpg, jpeg, png, webp)')
+                return res.redirect(`/manajer/kunjungan/edit/${id}`)
+            }
+
+            if (files.some(file => !allowedFormats.includes(file.mimetype))) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Semua foto harus berupa gambar (jpg, jpeg, png, webp)')
+                return res.redirect(`/manajer/kunjungan/edit/${id}`)
+            }
+
+            if (coverFile && coverFile.path) {
+                const isValidDimensions = await checkImageDimensions(coverFile.path)
+                if (!isValidDimensions) {
+                    deleteUploadedFiles(files)
+                    deleteUploadedFiles([coverFile])
+                    req.flash('error', 'Dimensi gambar cover harus 3240x1272 pixel')
+                    return res.redirect(`/manajer/kunjungan/edit/${id}`)
+                }
+            }
+
+            let hapusFoto = req.body.hapus_foto || []
+            if (!Array.isArray(hapusFoto)) hapusFoto = [hapusFoto]
+            hapusFoto = hapusFoto.filter(Boolean)
+
+            const fotoLama = await Kunjungan.getPhotosByKunjunganId(id)
+            const sisaFotoLama = fotoLama.filter(f => !hapusFoto.includes(String(f.id)))
+
+            if (sisaFotoLama.length === 0 && files.length === 0) {
+                deleteUploadedFiles(files)
+                if (coverFile) deleteUploadedFiles([coverFile])
+                req.flash('error', 'Minimal harus ada 1 foto')
+                return res.redirect(`/manajer/kunjungan/edit/${id}`)
+            }
+
+            const updateData = { judul, deskripsi, waktu_kunjungan }
+
+            if (coverFile) {
+                if (kunjungan.cover) {
+                    deleteStoredCover(kunjungan.cover)
+                }
+                const processedCover = await processUploadedCover(coverFile)
+                updateData.cover = processedCover
+            }
+
+            await Kunjungan.update(updateData, id)
+
+            if (hapusFoto.length) {
+                const existingPhotos = await Kunjungan.getPhotosByIds(hapusFoto)
+                existingPhotos.forEach(photo => deleteStoredPhoto(photo.foto))
+                await Kunjungan.deletePhotosByIds(hapusFoto)
+            }
+
+            if (files.length) {
+                const processedPhotos = await processUploadedPhotos(files)
+                await Kunjungan.addPhotos(id, processedPhotos)
+            }
+
+            req.flash('success', 'Data kunjungan berhasil diperbarui')
+            res.redirect(`/manajer/kunjungan/detail/${id}`)
+        } catch (err) {
+            console.error(err)
+            deleteUploadedFiles(req.files?.foto || [])
+            if (req.files?.cover?.[0]) deleteUploadedFiles([req.files.cover[0]])
+            req.flash('error', 'Internal Server Error')
+            res.redirect('/manajer/kunjungan')
         }
-
-        const { judul, deskripsi, waktu_kunjungan } = req.body
-
-        if (!judul || !deskripsi || !waktu_kunjungan) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Semua field wajib diisi')
-            return res.redirect(`/manajer/kunjungan/edit/${id}`)
-        }
-
-        const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
-        if (files.some(file => !allowedFormats.includes(file.mimetype))) {
-            deleteUploadedFiles(files)
-            req.flash('error', 'Hanya file gambar (jpg, jpeg, png, webp) yang diizinkan')
-            return res.redirect(`/manajer/kunjungan/edit/${id}`)
-        }
-
-        await Kunjungan.update({ judul, deskripsi, waktu_kunjungan }, id)
-
-        let hapusFoto = req.body.hapus_foto || []
-        if (!Array.isArray(hapusFoto)) hapusFoto = [hapusFoto]
-        hapusFoto = hapusFoto.filter(Boolean)
-
-        if (hapusFoto.length) {
-            const existingPhotos = await Kunjungan.getPhotosByIds(hapusFoto)
-            existingPhotos.forEach(photo => deleteStoredPhoto(photo.foto))
-            await Kunjungan.deletePhotosByIds(hapusFoto)
-        }
-
-        if (files.length) {
-            const processedPhotos = await processUploadedPhotos(files)
-            await Kunjungan.addPhotos(id, processedPhotos)
-        }
-
-        req.flash('success', 'Data kunjungan berhasil diperbarui')
-        res.redirect(`/manajer/kunjungan/detail/${id}`)
-    } catch (err) {
-        console.error(err)
-        deleteUploadedFiles(req.files)
-        req.flash('error', 'Internal Server Error')
-        res.redirect('/manajer/kunjungan')
     }
-})
+)
 
 router.post('/hapus/:id', authManajer, async (req, res) => {
     try {
@@ -262,6 +361,10 @@ router.post('/hapus/:id', authManajer, async (req, res) => {
 
         const foto = await Kunjungan.getPhotos(id)
         foto.forEach(item => deleteStoredPhoto(item.foto))
+
+        if (kunjungan.cover) {
+            deleteStoredCover(kunjungan.cover)
+        }
 
         await Kunjungan.delete(id)
         req.flash('success', 'Data kunjungan berhasil dihapus')

@@ -43,6 +43,18 @@
                             </div>
                         </div>
 
+                        <% if (magang.cover) { %>
+                            <div class="mb-4">
+                                <h5 class="mb-3">Foto Cover</h5>
+                                <div class="image-preview-container magang-photo-container">
+                                    <div class="image-preview-item magang-photo-item">
+                                        <img src="/images/magang/<%= magang.cover %>" data-src="/images/magang/<%= magang.cover %>" alt="Foto cover magang" class="img-click-preview magang-photo-full">
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                        <% } %>
+
                         <div class="description-box mb-4">
                             <div class="d-flex align-items-center mb-2">
                                 <span class="meta-label mb-0">Deskripsi Tugas</span>
