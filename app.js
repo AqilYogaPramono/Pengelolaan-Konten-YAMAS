@@ -46,10 +46,10 @@ app.use(session({
 }))
 
 app.use(flash())
+
 app.use(cors({
-    origin: 'https://medayuagung.my.id',
-    methods: ['GET', 'OPTIONS'],
-    allowedHeaders: ['Content-Type']
+    origin: true,
+    credentials: true
 }))
 
 app.options('*', cors())
