@@ -1,0 +1,58 @@
+CREATE TABLE halaman_utama (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  foto VARCHAR(255) NOT NULL,
+  urutan INT NOT NULL UNIQUE
+);
+
+CREATE TABLE jabatan (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama_jabatan VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE anggota (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(255) NOT NULL,
+  foto VARCHAR(255) NOT NULL,
+  id_jabatan INT,
+  FOREIGN KEY (id_jabatan) REFERENCES jabatan(id) ON DELETE SET NULL
+);
+
+CREATE TABLE pengumuman (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  judul VARCHAR(255) NOT NULL,
+  foto VARCHAR(255),
+  isi TEXT NOT NULL,
+  dibuat_pada DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE magang (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  judul VARCHAR(255) NOT NULL,
+  deskripsi_tugas TEXT NOT NULL,
+  cover VARCHAR(255),
+  periode_mulai DATE NOT NULL,
+  periode_berakhir DATE NOT NULL
+);
+
+CREATE TABLE foto_kegiatan_magang (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  foto VARCHAR(255) NOT NULL,
+  id_magang INT,
+  FOREIGN KEY (id_magang) REFERENCES magang(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE kunjungan (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  judul VARCHAR(255) NOT NULL,
+  cover VARCHAR(255),
+  deskripsi TEXT NOT NULL,
+  waktu_kunjungan DATE NOT NULL
+);
+
+CREATE TABLE foto_kunjungan (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_kunjungan INT,
+  foto VARCHAR(255),
+  FOREIGN KEY (id_kunjungan) REFERENCES kunjungan(id) ON DELETE CASCADE
+);
