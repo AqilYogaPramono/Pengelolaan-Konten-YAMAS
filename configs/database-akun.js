@@ -7,6 +7,9 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME_AKUN,
     waitForConnections: true,
     connectionLimit: 10,
+    maxIdle: 2,
+    idleTimeout: 60000,
+    enableKeepAlive: true,
     queueLimit: 0
 }).promise();
 
