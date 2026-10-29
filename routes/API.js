@@ -1,5 +1,6 @@
 const express = require('express')
 const { onlyDomain } = require('../middlewares/cors-option')
+const { apiLimiter } = require('../middlewares/rate-limiter')
 
 const Pengumuman = require('../models/Pengumuman')
 const HalamanUtama = require('../models/HalamanUtama')
@@ -10,6 +11,7 @@ const Kunjungan = require('../models/Kunjungan')
 const router = express.Router()
 
 router.use(onlyDomain)
+router.use(apiLimiter)
 
 router.get('/halaman-utama', async(req, res) => {
     try {
