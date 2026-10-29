@@ -1,4 +1,5 @@
 const express = require('express')
+const { onlyDomain } = require('../middlewares/cors-option')
 
 const Pengumuman = require('../models/Pengumuman')
 const HalamanUtama = require('../models/HalamanUtama')
@@ -7,6 +8,8 @@ const Magang = require('../models/Magang')
 const Kunjungan = require('../models/Kunjungan')
 
 const router = express.Router()
+
+router.use(onlyDomain)
 
 router.get('/halaman-utama', async(req, res) => {
     try {
